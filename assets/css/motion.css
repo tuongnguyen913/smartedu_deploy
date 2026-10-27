@@ -101,22 +101,24 @@
 }
 
 /* Golden Commitment Cards Enhancement */
-.usp-card-enhanced {
+.usp-card-enhanced,
+.commitment-card {
   background: #FFFFFF;
   border-radius: 18px;
   border: 1px solid rgba(226, 232, 240, 0.9);
   padding: 32px 24px;
   position: relative;
-  transition: transform 0.35s var(--ease-smooth), box-shadow 0.35s var(--ease-smooth);
+  transition: transform 0.35s var(--ease-smooth), box-shadow 0.35s var(--ease-smooth), border-color 0.35s ease;
   box-shadow: var(--shadow-elevation-1);
   display: flex;
   flex-direction: column;
 }
 
-.usp-card-enhanced:hover {
+.usp-card-enhanced:hover,
+.commitment-card:hover {
   transform: translateY(-8px);
-  box-shadow: var(--shadow-elevation-3);
-  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 16px 36px -4px rgba(245, 158, 11, 0.18), var(--shadow-elevation-3);
+  border-color: rgba(245, 158, 11, 0.45);
 }
 
 .usp-card-enhanced .usp-badge-gold {
@@ -291,10 +293,10 @@
 
 .roadmap-step-marker {
   position: absolute;
-  left: -36px;
-  top: 2px;
-  width: 28px;
-  height: 28px;
+  left: -37px;
+  top: 18px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #FFFFFF;
   border: 3px solid #CBD5E1;
@@ -313,7 +315,7 @@
   border-color: #D81824;
   background: #D81824;
   color: #FFFFFF;
-  box-shadow: 0 0 0 6px rgba(216, 24, 36, 0.15);
+  box-shadow: 0 0 0 6px rgba(216, 24, 36, 0.18), 0 4px 12px rgba(216, 24, 36, 0.28);
 }
 
 .roadmap-step-card {
@@ -396,7 +398,85 @@
 }
 
 /* --------------------------------------------------------------------------
-   11. REDUCED MOTION SAFEGUARDS
+   11. EXPANDABLE LEGAL ACCORDION (gioi-thieu.html)
+   -------------------------------------------------------------------------- */
+.legal-accordion-item {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-elevation-1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.legal-accordion-item.active {
+  border-color: var(--color-primary, #D81824);
+  box-shadow: var(--shadow-elevation-2);
+}
+
+.legal-accordion-header {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: #FFFFFF;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.legal-accordion-header:hover {
+  background: #FAFAFA;
+}
+
+.legal-accordion-header h4 {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legal-accordion-icon {
+  font-size: 0.875rem;
+  color: #64748B;
+  transition: transform 0.3s ease;
+}
+
+.legal-accordion-item.active .legal-accordion-icon {
+  transform: rotate(180deg);
+  color: var(--color-primary, #D81824);
+}
+
+.legal-accordion-body {
+  display: none;
+  padding: 0 24px 22px;
+  font-size: 0.9375rem;
+  color: #475569;
+  line-height: 1.7;
+  border-top: 1px solid #F1F5F9;
+}
+
+.legal-accordion-item.active .legal-accordion-body {
+  display: block;
+}
+
+/* Space card dimensional zoom container */
+.space-card {
+  overflow: hidden !important;
+  border-radius: 18px !important;
+}
+
+.space-card img {
+  will-change: transform;
+  transition: transform 0.4s ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   12. REDUCED MOTION SAFEGUARDS
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

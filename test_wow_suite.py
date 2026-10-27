@@ -35,7 +35,7 @@ def run_all_tests():
         )
 
         print("\n" + "="*70)
-        print("🚀 SMARTEDU WOW UI UPGRADE — COMPREHENSIVE TEST SUITE")
+        print("🚀 SMARTEDU WOW UI UPGRADE — COMPREHENSIVE TEST SUITE (ENHANCED)")
         print("="*70)
 
         # -------------------------------------------------------------
@@ -82,7 +82,25 @@ def run_all_tests():
         page.goto("file:///d:/27102026/index.html", wait_until="domcontentloaded")
         page.wait_for_timeout(300)
 
-        # 1. Faculty horizontal scroll & arrows
+        # 1. Hero Slide Transition & GSAP Animate Hook
+        has_animate_hook = page.evaluate("() => typeof window.animateHeroSlide === 'function'")
+        assert has_animate_hook, "window.animateHeroSlide hook missing!"
+        print("  ✅ GSAP Slide Transition Engine đã sẵn sàng và gắn kết với Hero Carousel.")
+
+        hero_next = page.query_selector(".hero-btn-next")
+        if hero_next:
+            hero_next.click()
+            page.wait_for_timeout(300)
+            active_slide = page.eval_on_selector(".hero-slide.active", "el => el !== null")
+            assert active_slide, "No active hero slide after click next!"
+            print("  ✅ Chuyển slide tiếp theo kích hoạt GSAP Timeline reveal thành công.")
+
+        # 2. Golden Assurance Cards Enhancement
+        usp_cards = page.query_selector_all(".commitment-card.usp-card-enhanced")
+        assert len(usp_cards) == 4, f"Expected 4 enhanced golden commitment cards, got {len(usp_cards)}"
+        print("  ✅ 4 Cam Kết Vàng sở hữu class usp-card-enhanced và hiệu ứng phản quang viền vàng.")
+
+        # 3. Faculty horizontal scroll & arrows with throttle
         track = page.query_selector("#facultyScrollTrack")
         prev_btn = page.query_selector("#facultyScrollPrev")
         next_btn = page.query_selector("#facultyScrollNext")
@@ -106,7 +124,7 @@ def run_all_tests():
         assert scroll_after_prev <= 10, "Prev arrow did not scroll back!"
         print(f"  ✅ Faculty track scroll prev quay về đầu chuẩn xác (scrollLeft={scroll_after_prev}px).")
 
-        # 2. Teacher Bio Modal
+        # 4. Teacher Bio Modal
         bio_btn = page.query_selector('.faculty-card a.faculty-btn-bio[data-id="1"]')
         assert bio_btn is not None, "Faculty bio button 1 missing!"
         bio_btn.click()
@@ -117,7 +135,7 @@ def run_all_tests():
         page.wait_for_timeout(200)
         print("  ✅ Faculty modal hiển thị chuẩn dữ liệu học thuật và đóng bằng ESC thành công.")
 
-        # 3. Choose Course quick filter bar
+        # 5. Choose Course quick filter bar
         quick_select = page.query_selector("#quickFilterLevel")
         if quick_select:
             quick_select.select_option("cap2")
@@ -127,7 +145,7 @@ def run_all_tests():
             assert active_tab == "cap2", f"Quick filter did not activate cap2 tab! Got: {active_tab}"
             print("  ✅ Thanh chọn nhanh khóa học (Hero Quick Choose) liên kết đồng bộ với Course Tabs.")
 
-        # 4. Consultation Form Submit Toast
+        # 6. Consultation Form Submit Toast
         page.fill("#regName", "Nguyễn Văn An")
         page.fill("#regPhone", "0901234567")
         page.select_option("#regGrade", "Lớp 9 (Luyện thi vào 10)")
@@ -157,7 +175,11 @@ def run_all_tests():
         assert sticky_val == "lop9", f"Sticky grade select not synced! Expected lop9, got {sticky_val}"
         print(f"  ✅ Level Switcher 'Luyện thi Tuyển sinh 10' tự động đồng bộ sang Form đăng ký (stickyGrade={sticky_val}).")
 
-        # 2. Roadmap Timeline Nodes & Accordion
+        # 2. Roadmap Timeline Markers & Accordion
+        markers = page.query_selector_all(".roadmap-step-marker")
+        assert len(markers) == 3, f"Expected 3 roadmap step markers along the timeline line, got {len(markers)}"
+        print(f"  ✅ Trục lộ trình K-12 có đầy đủ {len(markers)} điểm mốc tròn (roadmap-step-marker) phát sáng viền đỏ.")
+
         accordion_headers = page.query_selector_all(".accordion-header")
         assert len(accordion_headers) >= 3, f"Expected at least 3 accordion stages, got {len(accordion_headers)}"
         accordion_headers[1].click()
@@ -235,7 +257,20 @@ def run_all_tests():
 
         toc_links = page.query_selector_all("#articleToc a, .toc-list a")
         assert len(toc_links) >= 4, f"Expected at least 4 TOC links, got {len(toc_links)}"
-        print(f"  ✅ Mục lục bài viết tự động (TOC) có đầy đủ {len(toc_links)} mục bám sát nội dung.")
+
+        # Test clicking TOC item 3
+        page.click('#articleToc a[href="#muc-3"]')
+        page.wait_for_timeout(400)
+        active_toc = page.query_selector('#articleToc a[href="#muc-3"].active-toc')
+        assert active_toc is not None, "Clicking TOC link did not activate active-toc class!"
+        print("  ✅ Click mục lục chuyển cuộn mượt và gắn class active-toc chuẩn xác.")
+
+        # Test scroll to very bottom
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        page.wait_for_timeout(300)
+        last_toc_active = page.eval_on_selector('#articleToc a[href="#muc-5"]', "el => el.classList.contains('active-toc')")
+        assert last_toc_active, "Last heading did not activate at bottom of article!"
+        print("  ✅ Cuộn đến cuối bài viết kích hoạt mục cuối cùng chuẩn xác.")
         page.close()
 
         # -------------------------------------------------------------
@@ -264,9 +299,9 @@ def run_all_tests():
         page.close()
 
         # -------------------------------------------------------------
-        # SUITE 8: Bento Grid & Digital Seal (gioi-thieu.html)
+        # SUITE 8: Bento Grid, Digital Seal & Legal Accordion (gioi-thieu.html)
         # -------------------------------------------------------------
-        print("\n[SUITE 8] Kiểm thử Bento Grid & Con Dấu Điện Tử (gioi-thieu.html)")
+        print("\n[SUITE 8] Kiểm thử Bento Grid, Con Dấu Điện Tử & Legal Accordion (gioi-thieu.html)")
         page = browser.new_page(viewport={"width": 1440, "height": 900})
         page.goto("file:///d:/27102026/gioi-thieu.html", wait_until="domcontentloaded")
         page.wait_for_timeout(300)
@@ -276,6 +311,17 @@ def run_all_tests():
         seal = page.query_selector(".editorial-stamp-seal, .stamp-digital, .editorial-seal")
         assert seal is not None, "Digital seal stamp missing in leadership quote block!"
         print("  ✅ Bento Grid Hệ Giá Trị Cốt Lõi & Con dấu điện tử hiển thị sang trọng, uy tín.")
+
+        # Legal accordion test
+        legal_headers = page.query_selector_all(".legal-accordion-header")
+        assert len(legal_headers) == 3, f"Expected 3 legal accordion items, got {len(legal_headers)}"
+        
+        # Click Item 2 to expand
+        legal_headers[1].click()
+        page.wait_for_timeout(250)
+        item2_active = page.eval_on_selector_all(".legal-accordion-item", "items => items[1].classList.contains('active')")
+        assert item2_active, "Legal accordion item 2 did not expand on click!"
+        print("  ✅ Hồ sơ pháp lý dạng Accordion tương tác mở xem chi tiết quy chế tại chỗ mượt mà.")
         page.close()
 
         browser.close()

@@ -67,6 +67,9 @@ function initHeroSlider() {
       dot.classList.toggle('active', i === index);
     });
     currentSlide = index;
+    if (window.animateHeroSlide && slides[index]) {
+      window.animateHeroSlide(slides[index]);
+    }
   }
 
   function nextSlide() {
@@ -500,17 +503,23 @@ function initFacultyShowcase() {
       nextBtn.setAttribute('aria-disabled', atEnd ? 'true' : 'false');
     }
 
+    let isScrolling = false;
+    function handleScrollClick(direction) {
+      if (isScrolling) return;
+      isScrolling = true;
+      const scrollAmount = direction * 340;
+      scrollTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      setTimeout(() => {
+        isScrolling = false;
+        updateFacultyNavArrows();
+      }, 350);
+    }
+
     if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
-        scrollTrack.scrollBy({ left: -340, behavior: 'smooth' });
-        setTimeout(updateFacultyNavArrows, 350);
-      });
+      prevBtn.addEventListener('click', () => handleScrollClick(-1));
     }
     if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
-        scrollTrack.scrollBy({ left: 340, behavior: 'smooth' });
-        setTimeout(updateFacultyNavArrows, 350);
-      });
+      nextBtn.addEventListener('click', () => handleScrollClick(1));
     }
 
     scrollTrack.addEventListener('scroll', updateFacultyNavArrows, { passive: true });
@@ -1015,6 +1024,16 @@ function initCurriculumAccordion() {
       if (!wasActive) {
         parent.classList.add('active');
       }
+    });
+  });
+
+  // Legal accordion on gioi-thieu.html
+  const legalHeaders = document.querySelectorAll('.legal-accordion-header');
+  legalHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+      const parent = header.closest('.legal-accordion-item');
+      if (!parent) return;
+      parent.classList.toggle('active');
     });
   });
 }

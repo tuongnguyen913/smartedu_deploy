@@ -30,7 +30,9 @@
   function initMagneticElements() {
     // Only enable on desktop pointer devices
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      const magnetics = document.querySelectorAll('.btn-magnetic, .magnetic-item');
+      const magnetics = document.querySelectorAll(
+        '.btn-magnetic, .magnetic-item, .hero-actions .btn-primary-ila, .hero-actions .btn-secondary-ila, #btnQuickCourseFilter, .faculty-scroll-btn, .btn-register, .btn-submit-reg, .course-tab-btn'
+      );
       magnetics.forEach(el => {
         el.addEventListener('mousemove', function (e) {
           const rect = el.getBoundingClientRect();
@@ -39,8 +41,8 @@
           
           if (typeof gsap !== 'undefined') {
             gsap.to(el, {
-              x: x * 0.2,
-              y: y * 0.2,
+              x: x * 0.22,
+              y: y * 0.22,
               duration: 0.3,
               ease: 'power2.out'
             });
@@ -81,6 +83,21 @@
     updateProgress();
   }
 
+  // Global helper for animating active hero slide content with GSAP
+  window.animateHeroSlide = function (slideEl) {
+    if (typeof gsap === 'undefined' || !slideEl) return;
+    const tag = slideEl.querySelector('.hero-tag, .hero-badge, .badge-live-pulse');
+    const title = slideEl.querySelector('.hero-title, h1');
+    const desc = slideEl.querySelector('.hero-desc, p');
+    const actions = slideEl.querySelector('.hero-actions');
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    if (tag) tl.fromTo(tag, { y: -16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 0.05);
+    if (title) tl.fromTo(title, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, 0.15);
+    if (desc) tl.fromTo(desc, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, 0.28);
+    if (actions) tl.fromTo(actions, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 0.4);
+  };
+
   // 4. GSAP ScrollTrigger Animations & Staggers
   function initGSAPAnimations() {
     if (typeof gsap === 'undefined') return;
@@ -89,47 +106,64 @@
       gsap.registerPlugin(ScrollTrigger);
     }
 
-    // Hero timeline reveal (if on homepage)
-    const heroContent = document.querySelector('.hero-content-col');
-    if (heroContent) {
-      const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-      const badge = heroContent.querySelector('.hero-badge, .badge-live-pulse');
-      const title = heroContent.querySelector('.hero-title, h1');
-      const desc = heroContent.querySelector('.hero-desc, p');
-      const actions = heroContent.querySelector('.hero-actions');
-      const quickCards = document.querySelectorAll('.hero-quick-card');
+    // Hero timeline reveal on initial page load (index.html)
+    const activeHeroContent = document.querySelector('.hero-slide.active .hero-content') || document.querySelector('.hero-content');
+    if (activeHeroContent) {
+      window.animateHeroSlide(activeHeroContent);
 
-      if (badge) heroTl.from(badge, { y: -15, opacity: 0, duration: 0.6 }, 0.1);
-      if (title) heroTl.from(title, { y: 25, opacity: 0, duration: 0.8 }, 0.2);
-      if (desc) heroTl.from(desc, { y: 20, opacity: 0, duration: 0.7 }, 0.35);
-      if (actions) heroTl.from(actions, { y: 15, opacity: 0, duration: 0.6 }, 0.5);
-      if (quickCards.length > 0) {
-        heroTl.from(quickCards, { y: 20, opacity: 0, duration: 0.6, stagger: 0.1 }, 0.6);
+      const quickChoose = document.querySelector('.choose-course-card');
+      if (quickChoose) {
+        gsap.from(quickChoose, {
+          y: 28,
+          opacity: 0,
+          duration: 0.8,
+          delay: 0.5,
+          ease: 'power3.out'
+        });
       }
+    }
+
+    // Subtle Hero Background Parallax on Scroll (index.html)
+    const heroBgs = document.querySelectorAll('.hero-slide .hero-bg');
+    if (heroBgs.length > 0 && typeof ScrollTrigger !== 'undefined') {
+      gsap.to(heroBgs, {
+        scrollTrigger: {
+          trigger: '#section-hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1
+        },
+        y: 60,
+        ease: 'none'
+      });
     }
 
     // ScrollTrigger for sections and cards
     if (typeof ScrollTrigger !== 'undefined') {
-      // Golden USP Cards Stagger
-      const uspCards = document.querySelectorAll('.usp-card, .usp-card-enhanced');
+      // Golden Commitment & USP Cards Stagger (index.html)
+      const uspCards = document.querySelectorAll('.commitment-card, .usp-card, .usp-card-enhanced');
       if (uspCards.length > 0) {
+        // Clear conflicting transition classes
+        uspCards.forEach(c => c.classList.remove('scroll-reveal'));
         gsap.from(uspCards, {
           scrollTrigger: {
             trigger: uspCards[0].parentElement,
             start: 'top 85%',
             toggleActions: 'play none none none'
           },
-          y: 30,
+          y: 32,
           opacity: 0,
           duration: 0.7,
           stagger: 0.12,
-          ease: 'power2.out'
+          ease: 'power2.out',
+          clearProps: 'transform,opacity'
         });
       }
 
       // Bento Cards on gioi-thieu.html
       const bentoCards = document.querySelectorAll('.bento-card');
       if (bentoCards.length > 0) {
+        bentoCards.forEach(c => c.classList.remove('scroll-reveal'));
         gsap.from(bentoCards, {
           scrollTrigger: {
             trigger: bentoCards[0].parentElement,
@@ -140,12 +174,13 @@
           opacity: 0,
           duration: 0.8,
           stagger: 0.15,
-          ease: 'power2.out'
+          ease: 'power2.out',
+          clearProps: 'transform,opacity'
         });
       }
 
-      // Campus photos subtle scroll zoom scrub
-      const campusPhotos = document.querySelectorAll('.campus-gallery-img');
+      // Campus photos subtle scroll zoom scrub (index.html)
+      const campusPhotos = document.querySelectorAll('.space-card img, .campus-gallery-img');
       campusPhotos.forEach(img => {
         gsap.to(img, {
           scrollTrigger: {
@@ -154,7 +189,7 @@
             end: 'bottom top',
             scrub: 1
           },
-          scale: 1.04,
+          scale: 1.06,
           ease: 'none'
         });
       });
@@ -168,7 +203,7 @@
     if (!nodes.length || !progressBar) return;
 
     function checkActiveNodes() {
-      const scrollPos = window.scrollY + window.innerHeight * 0.6;
+      const scrollPos = window.scrollY + window.innerHeight * 0.65;
       let activeCount = 0;
 
       nodes.forEach((node, idx) => {
@@ -193,32 +228,69 @@
   }
 
   // 6. Article TOC Active Heading Tracker (bai-viet-chi-tiet.html)
+  // Handles fast scrolling, click jumps, and bottom-of-page bounds reliably
   function initArticleTOC() {
     const tocLinks = document.querySelectorAll('#articleToc a, .toc-list a');
     const headings = document.querySelectorAll('.article-content h2, .article-content h3, .article-body h2, .article-body h3');
     if (!tocLinks.length || !headings.length) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id;
-            if (id) {
-              tocLinks.forEach(link => {
-                if (link.getAttribute('href') === '#' + id) {
-                  link.classList.add('active-toc');
-                } else {
-                  link.classList.remove('active-toc');
-                }
-              });
-            }
-          }
-        });
-      },
-      { rootMargin: '-20% 0px -70% 0px' }
-    );
+    let clickLockUntil = 0;
 
-    headings.forEach(h => observer.observe(h));
+    function setActiveTOC(id) {
+      if (!id) return;
+      tocLinks.forEach(link => {
+        if (link.getAttribute('href') === '#' + id) {
+          link.classList.add('active-toc');
+        } else {
+          link.classList.remove('active-toc');
+        }
+      });
+    }
+
+    function checkTOCPosition() {
+      if (Date.now() < clickLockUntil) return;
+
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+
+      // Bottom of page: activate last item
+      if (scrollY + windowHeight >= docHeight - 70) {
+        setActiveTOC(headings[headings.length - 1].id);
+        return;
+      }
+
+      // Find heading closest to top reading area
+      let currentHeadingId = headings[0].id;
+      headings.forEach(heading => {
+        const rect = heading.getBoundingClientRect();
+        if (rect.top <= 160) {
+          currentHeadingId = heading.id;
+        }
+      });
+
+      setActiveTOC(currentHeadingId);
+    }
+
+    window.addEventListener('scroll', checkTOCPosition, { passive: true });
+    checkTOCPosition();
+
+    // Smooth click handler on TOC links
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function (e) {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          const target = document.getElementById(href.substring(1));
+          if (target) {
+            e.preventDefault();
+            clickLockUntil = Date.now() + 1000;
+            setActiveTOC(target.id);
+            const topOffset = target.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top: topOffset, behavior: 'smooth' });
+          }
+        }
+      });
+    });
   }
 
   // Initialize all motion modules when DOM is ready
