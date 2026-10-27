@@ -63,7 +63,7 @@
 
   // 3. Faculty Track Scroll Progress Bar (index.html)
   function initFacultyProgress() {
-    const track = document.getElementById('facultyTrack');
+    const track = document.getElementById('facultyScrollTrack') || document.getElementById('facultyTrack');
     const progressBar = document.querySelector('.faculty-scroll-progress-bar');
     if (!track || !progressBar) return;
 
@@ -174,10 +174,10 @@
       nodes.forEach((node, idx) => {
         const top = node.getBoundingClientRect().top + window.scrollY;
         if (scrollPos >= top) {
-          node.classList.add('active');
+          node.classList.add('timeline-active');
           activeCount = idx + 1;
         } else {
-          node.classList.remove('active');
+          node.classList.remove('timeline-active');
         }
       });
 

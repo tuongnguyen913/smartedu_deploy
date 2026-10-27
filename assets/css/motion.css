@@ -308,7 +308,8 @@
   z-index: 2;
 }
 
-.roadmap-step-node.active .roadmap-step-marker {
+.roadmap-step-node.active .roadmap-step-marker,
+.roadmap-step-node.timeline-active .roadmap-step-marker {
   border-color: #D81824;
   background: #D81824;
   color: #FFFFFF;

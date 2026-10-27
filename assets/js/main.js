@@ -218,6 +218,35 @@ function initCourseFiltering() {
       }
     });
 
+    // Also highlight matching tuition table row on chuong-trinh-hoc.html
+    const tuitionRows = document.querySelectorAll('.tuition-table tbody tr');
+    if (tuitionRows.length > 0) {
+      tuitionRows.forEach(row => {
+        const rowLevel = row.getAttribute('data-level') || '';
+        if (level === 'all' || rowLevel.includes(level)) {
+          row.style.opacity = '1';
+          if (level !== 'all') {
+            row.style.backgroundColor = 'rgba(216, 24, 36, 0.05)';
+            row.style.transition = 'background-color 0.3s ease, opacity 0.3s ease';
+          } else {
+            row.style.backgroundColor = '';
+          }
+        } else {
+          row.style.opacity = '0.4';
+          row.style.backgroundColor = '';
+        }
+      });
+    }
+
+    // Also sync with sticky form dropdown on chuong-trinh-hoc.html
+    const stickyGrade = document.getElementById('stickyGrade');
+    if (stickyGrade && level !== 'all') {
+      if (level === 'cap1') stickyGrade.value = 'cap1';
+      else if (level === 'cap2') stickyGrade.value = 'lop6';
+      else if (level === 'tuyensinh10') stickyGrade.value = 'lop9';
+      else if (level === 'cap3' || level === 'daihoc') stickyGrade.value = 'cap3';
+    }
+
     const noResultMsg = document.getElementById('noCoursesFound');
     if (noResultMsg) {
       noResultMsg.style.display = (visibleCount === 0) ? 'block' : 'none';
@@ -372,10 +401,24 @@ function initFacultyShowcase() {
 
       const filterVal = btn.getAttribute('data-filter') || 'all';
 
+      const matchingCards = [];
       facultyCards.forEach(card => {
         const dept = card.getAttribute('data-department') || '';
         if (filterVal === 'all' || dept.includes(filterVal)) {
           card.style.display = 'flex';
+          matchingCards.push(card);
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (typeof gsap !== 'undefined' && matchingCards.length > 0) {
+        gsap.fromTo(matchingCards,
+          { opacity: 0, y: 15, scale: 0.98 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.04, ease: 'power2.out', clearProps: 'transform' }
+        );
+      } else {
+        matchingCards.forEach(card => {
           card.style.opacity = '0';
           card.style.transform = 'translateY(12px)';
           setTimeout(() => {
@@ -383,10 +426,8 @@ function initFacultyShowcase() {
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
           }, 30);
-        } else {
-          card.style.display = 'none';
-        }
-      });
+        });
+      }
     });
   });
 
