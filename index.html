@@ -25,6 +25,7 @@
   <!-- Core Design System CSS -->
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/subpages.css">
+  <link rel="stylesheet" href="assets/css/motion.css">
   
   <!-- Canvas Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -769,7 +770,11 @@
         </div>
 
         <!-- Scroll Indicator Hint & CTA button linking to ban-giang-huan.html -->
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 28px;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 24px;">
+          <!-- Interactive Faculty Scroll Progress Bar -->
+          <div class="faculty-scroll-progress-wrap" aria-label="Faculty scroll progress">
+            <div class="faculty-scroll-progress-bar"></div>
+          </div>
           <div class="faculty-scroll-hint" style="display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--color-text-muted);">
             <i class="fa-solid fa-arrows-left-right" style="color: var(--color-primary);"></i>
             <span>Vuốt hoặc cuộn ngang để xem các Trưởng bộ môn</span>
@@ -1489,7 +1494,10 @@
     <span id="toastMessage" style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-dark);">Thông báo</span>
   </div>
 
-  <!-- Interactive Scripts -->
+  <!-- Interactive Scripts & Motion Engine -->
+  <script src="assets/js/gsap.min.js"></script>
+  <script src="assets/js/ScrollTrigger.min.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/motion.js"></script>
 </body>
 </html>

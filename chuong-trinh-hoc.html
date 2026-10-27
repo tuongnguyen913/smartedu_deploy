@@ -20,6 +20,7 @@
   <!-- Core Design System & Subpages CSS -->
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/subpages.css">
+  <link rel="stylesheet" href="assets/css/motion.css">
   
   <!-- Canvas Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -274,9 +275,11 @@
               <h2 style="font-size:1.75rem; font-weight:800; color:#0F172A; margin: 8px 0 20px;">Lộ Trình Học Chi Tiết Theo Chuyên Đề</h2>
               <p style="color:#64748B; font-size:0.9375rem; margin-bottom:24px;">Nhấp vào từng chuyên đề dưới đây để xem chi tiết mục tiêu kiến thức và phương pháp sư phạm áp dụng.</p>
 
-              <div class="accordion-wrapper">
+              <div class="roadmap-timeline-container">
+                <div class="roadmap-timeline-progress"></div>
+                <div class="accordion-wrapper">
                 <!-- Accordion 1 -->
-                <div class="accordion-item active">
+                <div class="accordion-item active roadmap-step-node">
                   <div class="accordion-header">
                     <div class="accordion-title-wrap">
                       <span class="accordion-num">01</span>
@@ -295,7 +298,7 @@
                 </div>
 
                 <!-- Accordion 2 -->
-                <div class="accordion-item">
+                <div class="accordion-item roadmap-step-node">
                   <div class="accordion-header">
                     <div class="accordion-title-wrap">
                       <span class="accordion-num">02</span>
@@ -314,7 +317,7 @@
                 </div>
 
                 <!-- Accordion 3 -->
-                <div class="accordion-item">
+                <div class="accordion-item roadmap-step-node">
                   <div class="accordion-header">
                     <div class="accordion-title-wrap">
                       <span class="accordion-num">03</span>
@@ -332,6 +335,7 @@
                   </div>
                 </div>
               </div>
+            </div>
             </div>
 
             <!-- Transparent Tuition Schedule Table -->
@@ -396,6 +400,10 @@
           <div class="curriculum-sticky-side">
             <div class="curriculum-sticky-box scroll-reveal">
               <span class="sticky-box-badge"><i class="fa-solid fa-shield-halved"></i> 4 Cam Kết Vàng</span>
+              <div class="badge-live-pulse" style="margin-top: 10px; margin-bottom: 6px; width: 100%; justify-content: center;">
+                <span class="pulse-dot"></span>
+                <span>Chỉ còn 3 suất học thử 0đ trong tuần</span>
+              </div>
               <h3 class="sticky-box-title">Đăng Ký Học Thử 02 Buổi</h3>
               <div class="sticky-box-price">
                 0đ <span>/ 2 buổi trải nghiệm</span>
@@ -582,8 +590,11 @@
     <span id="toastMessage">Đăng ký thành công!</span>
   </div>
 
-  <!-- Main JavaScript -->
+  <!-- Interactive Scripts & Motion Engine -->
+  <script src="assets/js/gsap.min.js"></script>
+  <script src="assets/js/ScrollTrigger.min.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/motion.js"></script>
 </body>
 </html>
 

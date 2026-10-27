@@ -20,6 +20,7 @@
   <!-- Core Design System & Subpages CSS -->
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/subpages.css">
+  <link rel="stylesheet" href="assets/css/motion.css">
   
   <!-- Canvas Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -215,7 +216,7 @@
       <!-- Table of Contents -->
       <div class="table-of-contents">
         <div class="toc-title"><i class="fa-solid fa-list-ol"></i> Mục lục bài viết</div>
-        <ol class="toc-list">
+        <ol class="toc-list" id="articleToc">
           <li><a href="#muc-1">1. Học hè – giai đoạn "vàng" để con bứt phá kiến thức</a></li>
           <li><a href="#muc-2">2. Bảng so sánh 8 tiêu chí: Học trung tâm vs Học gia sư tại nhà</a></li>
           <li><a href="#muc-3">3. Phân tích ưu &amp; nhược điểm của từng hình thức</a></li>
@@ -509,8 +510,11 @@
     <span id="toastMessage">Đăng ký thành công!</span>
   </div>
 
-  <!-- Main JavaScript -->
+  <!-- Interactive Scripts & Motion Engine -->
+  <script src="assets/js/gsap.min.js"></script>
+  <script src="assets/js/ScrollTrigger.min.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/motion.js"></script>
 </body>
 </html>
 

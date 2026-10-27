@@ -1,11 +1,11 @@
-import sys
+﻿import sys
 import glob
 from bs4 import BeautifulSoup
 
 def run_deep_audit():
     print("=== DEEP AUDIT OF ALL 8 PAGES ===")
     
-    html_files = sorted(glob.glob('d:/SmartEdu/SmartEdu.DesignUI/27102026/*.html'))
+    html_files = sorted(glob.glob('d:/27102026/*.html'))
     all_pages = {}
     
     for f in html_files:
@@ -81,3 +81,4 @@ def run_deep_audit():
 
 if __name__ == '__main__':
     run_deep_audit()
+

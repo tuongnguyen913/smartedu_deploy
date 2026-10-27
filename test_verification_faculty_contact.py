@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 import os
 sys.stdout.reconfigure(encoding='utf-8')
 from playwright.sync_api import sync_playwright
@@ -18,7 +18,7 @@ def run_tests():
         print("==================================================")
         print("TEST 1: lien-he.html (3 Cards Row, Form, Map & Submit)")
         print("==================================================")
-        page.goto('file:///d:/SmartEdu/SmartEdu.DesignUI/27102026/lien-he.html', wait_until='networkidle')
+        page.goto('file:///d:/27102026/lien-he.html', wait_until='networkidle')
         page.wait_for_timeout(500)
 
         # 1. Verify 3 cards in campus-cards-row
@@ -110,7 +110,7 @@ def run_tests():
         print("\n==================================================")
         print("TEST 2: index.html (Faculty Showcase, Arrows & All 4 Modals)")
         print("==================================================")
-        page.goto('file:///d:/SmartEdu/SmartEdu.DesignUI/27102026/index.html', wait_until='networkidle')
+        page.goto('file:///d:/27102026/index.html', wait_until='networkidle')
         page.wait_for_timeout(500)
 
         # 1. Verify exactly 4 featured faculty cards on homepage
@@ -231,7 +231,7 @@ def run_tests():
         for vp in viewports:
             page.set_viewport_size({'width': vp, 'height': 800})
             for p_name in pages_to_check:
-                page.goto(f'file:///d:/SmartEdu/SmartEdu.DesignUI/27102026/{p_name}', wait_until='networkidle')
+                page.goto(f'file:///d:/27102026/{p_name}', wait_until='networkidle')
                 page.wait_for_timeout(150)
                 scroll_w = page.evaluate('() => document.documentElement.scrollWidth')
                 inner_w = page.evaluate('() => window.innerWidth')
@@ -242,13 +242,13 @@ def run_tests():
         
         # Save mobile screenshots
         page.set_viewport_size({'width': 375, 'height': 812})
-        page.goto('file:///d:/SmartEdu/SmartEdu.DesignUI/27102026/lien-he.html', wait_until='networkidle')
+        page.goto('file:///d:/27102026/lien-he.html', wait_until='networkidle')
         page.wait_for_timeout(200)
         page.locator('#contactFormSection').scroll_into_view_if_needed()
         page.wait_for_timeout(300)
         page.screenshot(path=r'd:\SmartEdu\SmartEdu.DesignUI\27102026\screenshots\lien-he-mobile-375.png')
         
-        page.goto('file:///d:/SmartEdu/SmartEdu.DesignUI/27102026/index.html', wait_until='networkidle')
+        page.goto('file:///d:/27102026/index.html', wait_until='networkidle')
         page.wait_for_timeout(200)
         page.locator('#section-faculty').scroll_into_view_if_needed()
         page.wait_for_timeout(300)
@@ -265,3 +265,4 @@ def run_tests():
 
 if __name__ == '__main__':
     run_tests()
+
