@@ -25,6 +25,7 @@
   <!-- Core Design System CSS -->
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/subpages.css">
+  <link rel="stylesheet" href="assets/css/motion.css">
   
   <!-- Canvas Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -344,7 +345,7 @@
             </div>
 
             <!-- Action Button -->
-            <button type="button" class="btn-register btn-red" id="btnQuickCourseFilter">
+            <button type="button" class="btn-register btn-red btn-magnetic" id="btnQuickCourseFilter">
               <span>Tìm khóa học <i class="fa-solid fa-arrow-right"></i></span>
             </button>
           </form>
@@ -613,7 +614,7 @@
         <!-- 4 Commitments Bento Grid -->
         <div class="commitments-grid">
           
-          <div class="commitment-card scroll-reveal">
+          <div class="commitment-card usp-card-enhanced scroll-reveal">
             <span class="commitment-number">01</span>
             <div class="commitment-icon-wrap">
               <i class="fa-solid fa-user-graduate"></i>
@@ -622,7 +623,7 @@
             <p class="commitment-desc">Học sinh chưa nắm vững bài hoặc nghỉ học có phép được thầy cô phụ đạo riêng ngoài giờ 1:1 hoàn toàn miễn phí cho đến khi hiểu bài thấu đáo.</p>
           </div>
 
-          <div class="commitment-card scroll-reveal stagger-1">
+          <div class="commitment-card usp-card-enhanced scroll-reveal stagger-1">
             <span class="commitment-number">02</span>
             <div class="commitment-icon-wrap">
               <i class="fa-solid fa-hand-holding-dollar"></i>
@@ -631,7 +632,7 @@
             <p class="commitment-desc">Nếu học sinh tham gia học tập nghiêm túc, làm đủ bài tập theo lộ trình mà không đạt tiến bộ về điểm số sau 01 khóa học tại SmartEdu.</p>
           </div>
 
-          <div class="commitment-card scroll-reveal stagger-2">
+          <div class="commitment-card usp-card-enhanced scroll-reveal stagger-2">
             <span class="commitment-number">03</span>
             <div class="commitment-icon-wrap">
               <i class="fa-solid fa-chalkboard-user"></i>
@@ -640,7 +641,7 @@
             <p class="commitment-desc">Đội ngũ Thạc sĩ, Cử nhân tốt nghiệp chính quy ĐH Sư phạm TP.HCM &amp; ĐH Khoa học Tự nhiên với hơn 5-15 năm kinh nghiệm giảng dạy nhiệt huyết.</p>
           </div>
 
-          <div class="commitment-card scroll-reveal stagger-3">
+          <div class="commitment-card usp-card-enhanced scroll-reveal stagger-3">
             <span class="commitment-number">04</span>
             <div class="commitment-icon-wrap">
               <i class="fa-solid fa-seedling"></i>
@@ -712,7 +713,7 @@
             <!-- Teacher 1: ThS. Nguyễn Thanh Tùng -->
             <div class="faculty-card" data-department="lanhdao toan">
               <div class="faculty-thumb-wrap">
-                <img src="assets/images/teachers/teacher-1.jpg" alt="ThS. Nguyễn Thanh Tùng" loading="lazy">
+                <img src="assets/images/teachers/teacher-1.jpg" alt="ThS. Nguyễn Thanh Tùng">
                 <span class="faculty-badge">14 Năm Kinh Nghiệm</span>
               </div>
               <div class="faculty-info">
@@ -726,7 +727,7 @@
             <!-- Teacher 2: ThS. Lê Thu Thảo -->
             <div class="faculty-card" data-department="lanhdao van">
               <div class="faculty-thumb-wrap">
-                <img src="assets/images/teachers/teacher-2.jpg" alt="ThS. Lê Thu Thảo" loading="lazy">
+                <img src="assets/images/teachers/teacher-2.jpg" alt="ThS. Lê Thu Thảo">
                 <span class="faculty-badge">12 Năm Kinh Nghiệm</span>
               </div>
               <div class="faculty-info">
@@ -740,7 +741,7 @@
             <!-- Teacher 3: ThS. Hoàng Minh Đức -->
             <div class="faculty-card" data-department="lanhdao anh">
               <div class="faculty-thumb-wrap">
-                <img src="assets/images/teachers/teacher-3.jpg" alt="ThS. Hoàng Minh Đức" loading="lazy">
+                <img src="assets/images/teachers/teacher-3.jpg" alt="ThS. Hoàng Minh Đức">
                 <span class="faculty-badge">IELTS 8.5 &bull; 10 Năm KN</span>
               </div>
               <div class="faculty-info">
@@ -754,7 +755,7 @@
             <!-- Teacher 4: ThS. Trần Quốc Bảo -->
             <div class="faculty-card" data-department="lanhdao khtn ly">
               <div class="faculty-thumb-wrap">
-                <img src="assets/images/teachers/teacher-4.jpg" alt="ThS. Trần Quốc Bảo" loading="lazy">
+                <img src="assets/images/teachers/teacher-4.jpg" alt="ThS. Trần Quốc Bảo">
                 <span class="faculty-badge">9 Năm Kinh Nghiệm</span>
               </div>
               <div class="faculty-info">
@@ -769,7 +770,11 @@
         </div>
 
         <!-- Scroll Indicator Hint & CTA button linking to ban-giang-huan.html -->
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 28px;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 24px;">
+          <!-- Interactive Faculty Scroll Progress Bar -->
+          <div class="faculty-scroll-progress-wrap" aria-label="Faculty scroll progress">
+            <div class="faculty-scroll-progress-bar"></div>
+          </div>
           <div class="faculty-scroll-hint" style="display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--color-text-muted);">
             <i class="fa-solid fa-arrows-left-right" style="color: var(--color-primary);"></i>
             <span>Vuốt hoặc cuộn ngang để xem các Trưởng bộ môn</span>
@@ -1416,7 +1421,7 @@
       <button class="modal-close-btn" id="closeFacultyModal">&times;</button>
       <div style="padding: 36px 32px;" class="faculty-modal-grid">
         <div>
-          <img id="modalFacultyImg" src="" alt="Chân dung giảng viên" style="width: 100%; height: 260px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.1);">
+          <img id="modalFacultyImg" src="assets/images/teachers/teacher-1.jpg" alt="Chân dung giảng viên" style="width: 100%; height: 260px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.1);">
         </div>
         <div>
           <span id="modalFacultySubject" style="color: var(--color-primary); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;"></span>
@@ -1489,7 +1494,10 @@
     <span id="toastMessage" style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-dark);">Thông báo</span>
   </div>
 
-  <!-- Interactive Scripts -->
+  <!-- Interactive Scripts & Motion Engine -->
+  <script src="assets/js/gsap.min.js"></script>
+  <script src="assets/js/ScrollTrigger.min.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/motion.js"></script>
 </body>
 </html>

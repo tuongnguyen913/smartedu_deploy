@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-base_dir = r"d:\SmartEdu\SmartEdu.DesignUI\27102026"
+base_dir = r"d:\27102026"
 output_dir = os.path.join(base_dir, "screenshots")
 os.makedirs(output_dir, exist_ok=True)
 
@@ -142,4 +142,5 @@ def capture_all():
 
 if __name__ == "__main__":
     capture_all()
+
 

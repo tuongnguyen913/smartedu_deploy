@@ -1,0 +1,491 @@
+/* ==========================================================================
+   SMARTEDU ACADEMY — MOTION & 2D DIMENSIONAL ENGINE (motion.css)
+   Benchmarks: VUS, ILA, Mathnasium, Apple Design Guidelines
+   Techniques: GSAP ScrollTrigger Integration, Layered Ambient Shadows,
+               Brand Motif Watermarks, Magnetic Hover, Micro-Interactions
+   ========================================================================== */
+
+:root {
+  /* Dynamic Elevation Shadows (Layered Ambient Depth) */
+  --shadow-elevation-1: 0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
+  --shadow-elevation-2: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --shadow-elevation-3: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+  --shadow-elevation-4: 0 24px 48px -8px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
+  --shadow-glow-red: 0 8px 30px -4px rgba(216, 24, 36, 0.28);
+  --shadow-glow-navy: 0 8px 30px -4px rgba(30, 58, 138, 0.24);
+  --shadow-glow-gold: 0 8px 30px -4px rgba(245, 158, 11, 0.28);
+
+  /* Glassmorphism & Gradient Borders */
+  --glass-bg: rgba(255, 255, 255, 0.88);
+  --glass-bg-hover: rgba(255, 255, 255, 0.98);
+  --glass-border: 1px solid rgba(226, 232, 240, 0.8);
+  --glass-border-accent: 1px solid rgba(216, 24, 36, 0.2);
+
+  /* Easing curves */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   1. GLOBAL READING PROGRESS BAR (Used on Detail Pages)
+   -------------------------------------------------------------------------- */
+#readingProgressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-primary, #D81824), #F59E0B);
+  z-index: 99999;
+  box-shadow: 0 1px 8px rgba(216, 24, 36, 0.5);
+  transition: width 0.1s ease-out;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   2. BRAND MOTIF DECORATIVE PATTERNS (Subtle 2D Background Depth)
+   -------------------------------------------------------------------------- */
+.bg-brand-motif-light {
+  background-color: #FFFFFF;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(216, 24, 36, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(30, 58, 138, 0.03) 0%, transparent 40%),
+    linear-gradient(rgba(241, 245, 249, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(241, 245, 249, 0.6) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+}
+
+.bg-brand-motif-navy {
+  background-color: #0F172A;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(216, 24, 36, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(37, 99, 235, 0.18) 0%, transparent 50%),
+    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px;
+}
+
+/* --------------------------------------------------------------------------
+   3. 2D DIMENSIONAL CARDS & HOVER PHYSICS
+   -------------------------------------------------------------------------- */
+.dimensional-card {
+  position: relative;
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-elevation-1);
+  transition: transform 0.4s var(--ease-smooth), box-shadow 0.4s var(--ease-smooth), border-color 0.4s ease;
+  overflow: hidden;
+  will-change: transform, box-shadow;
+}
+
+.dimensional-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-elevation-3);
+  border-color: rgba(216, 24, 36, 0.25);
+}
+
+.dimensional-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary, #D81824), var(--color-navy, #1E3A8A));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dimensional-card:hover::before {
+  opacity: 1;
+}
+
+/* Golden Commitment Cards Enhancement */
+.usp-card-enhanced,
+.commitment-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 32px 24px;
+  position: relative;
+  transition: transform 0.35s var(--ease-smooth), box-shadow 0.35s var(--ease-smooth), border-color 0.35s ease;
+  box-shadow: var(--shadow-elevation-1);
+  display: flex;
+  flex-direction: column;
+}
+
+.usp-card-enhanced:hover,
+.commitment-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 36px -4px rgba(245, 158, 11, 0.18), var(--shadow-elevation-3);
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+.usp-card-enhanced .usp-badge-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 158, 11, 0.1);
+  color: #B45309;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   4. MAGNETIC & SHINE BUTTONS
+   -------------------------------------------------------------------------- */
+.btn-magnetic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s var(--ease-smooth), box-shadow 0.25s var(--ease-smooth);
+  will-change: transform;
+}
+
+.btn-magnetic:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn-magnetic:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Light beam sweep across button */
+.btn-magnetic::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  transition: left 0.8s ease-in-out;
+}
+
+.btn-magnetic:hover::after {
+  left: 140%;
+}
+
+/* --------------------------------------------------------------------------
+   5. PULSING STATUS BADGES & FLOATING ELEMENTS
+   -------------------------------------------------------------------------- */
+.badge-live-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFF1F2;
+  color: #BE123C;
+  border: 1px solid #FECDD3;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.badge-live-pulse .pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #E11D48;
+  border-radius: 50%;
+  position: relative;
+}
+
+.badge-live-pulse .pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid #E11D48;
+  animation: pulseRipple 1.8s infinite ease-out;
+}
+
+@keyframes pulseRipple {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.gentle-float {
+  animation: gentleFloat 4s ease-in-out infinite;
+}
+
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* --------------------------------------------------------------------------
+   6. FACULTY HORIZONTAL TRACK PROGRESS INDICATOR
+   -------------------------------------------------------------------------- */
+.faculty-scroll-progress-wrap {
+  width: 100%;
+  max-width: 240px;
+  height: 5px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 18px auto 0;
+  position: relative;
+}
+
+.faculty-scroll-progress-bar {
+  height: 100%;
+  width: 25%;
+  background: linear-gradient(90deg, #D81824, #1E3A8A);
+  border-radius: 999px;
+  transition: width 0.25s ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   7. SYLLABUS ROADMAP (Interactive Journey Timeline for chuong-trinh-hoc.html)
+   -------------------------------------------------------------------------- */
+.roadmap-timeline-container {
+  position: relative;
+  padding-left: 36px;
+  margin: 40px 0;
+}
+
+.roadmap-timeline-container::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  background: #E2E8F0;
+  border-radius: 2px;
+}
+
+.roadmap-timeline-progress {
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  width: 3px;
+  height: 0%;
+  background: linear-gradient(180deg, #D81824, #1E3A8A);
+  border-radius: 2px;
+  transition: height 0.4s ease-out;
+}
+
+.roadmap-step-node {
+  position: relative;
+  margin-bottom: 36px;
+}
+
+.roadmap-step-node:last-child {
+  margin-bottom: 0;
+}
+
+.roadmap-step-marker {
+  position: absolute;
+  left: -37px;
+  top: 18px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 3px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748B;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.roadmap-step-node.active .roadmap-step-marker,
+.roadmap-step-node.timeline-active .roadmap-step-marker {
+  border-color: #D81824;
+  background: #D81824;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 6px rgba(216, 24, 36, 0.18), 0 4px 12px rgba(216, 24, 36, 0.28);
+}
+
+.roadmap-step-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-elevation-1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.roadmap-step-card:hover {
+  transform: translateX(6px);
+  border-color: #D81824;
+  box-shadow: var(--shadow-elevation-2);
+}
+
+/* --------------------------------------------------------------------------
+   8. EDITORIAL QUOTE SEAL & SIGNATURE BLOCK (gioi-thieu.html)
+   -------------------------------------------------------------------------- */
+.editorial-signature-frame {
+  background: #FDFBF7;
+  border: 1px solid #E7E0D3;
+  border-radius: 24px;
+  padding: 48px 40px;
+  position: relative;
+  box-shadow: 0 10px 30px -5px rgba(180, 83, 9, 0.06);
+}
+
+.editorial-stamp-seal {
+  position: absolute;
+  right: 40px;
+  bottom: 30px;
+  width: 100px;
+  height: 100px;
+  border: 2px dashed rgba(216, 24, 36, 0.4);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-12deg);
+  color: #D81824;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.2;
+  pointer-events: none;
+  opacity: 0.85;
+  background: rgba(254, 242, 242, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   9. STICKY ENROLLMENT ASIDE (chuong-trinh-hoc.html & bai-viet-chi-tiet.html)
+   -------------------------------------------------------------------------- */
+.sticky-curriculum-aside {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 100px;
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid #E2E8F0;
+  box-shadow: var(--shadow-elevation-3);
+  padding: 28px;
+  z-index: 10;
+}
+
+/* --------------------------------------------------------------------------
+   10. ACTIVE TOC HIGHLIGHT (bai-viet-chi-tiet.html)
+   -------------------------------------------------------------------------- */
+.toc-list a {
+  transition: color 0.25s ease, padding-left 0.25s ease, font-weight 0.25s ease;
+  display: inline-block;
+}
+
+.toc-list a.active-toc {
+  color: var(--color-primary, #D81824) !important;
+  font-weight: 700 !important;
+  transform: translateX(4px);
+}
+
+/* --------------------------------------------------------------------------
+   11. EXPANDABLE LEGAL ACCORDION (gioi-thieu.html)
+   -------------------------------------------------------------------------- */
+.legal-accordion-item {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-elevation-1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.legal-accordion-item.active {
+  border-color: var(--color-primary, #D81824);
+  box-shadow: var(--shadow-elevation-2);
+}
+
+.legal-accordion-header {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: #FFFFFF;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.legal-accordion-header:hover {
+  background: #FAFAFA;
+}
+
+.legal-accordion-header h4 {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legal-accordion-icon {
+  font-size: 0.875rem;
+  color: #64748B;
+  transition: transform 0.3s ease;
+}
+
+.legal-accordion-item.active .legal-accordion-icon {
+  transform: rotate(180deg);
+  color: var(--color-primary, #D81824);
+}
+
+.legal-accordion-body {
+  display: none;
+  padding: 0 24px 22px;
+  font-size: 0.9375rem;
+  color: #475569;
+  line-height: 1.7;
+  border-top: 1px solid #F1F5F9;
+}
+
+.legal-accordion-item.active .legal-accordion-body {
+  display: block;
+}
+
+/* Space card dimensional zoom container */
+.space-card {
+  overflow: hidden !important;
+  border-radius: 18px !important;
+}
+
+.space-card img {
+  will-change: transform;
+  transition: transform 0.4s ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   12. REDUCED MOTION SAFEGUARDS
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .gentle-float {
+    animation: none !important;
+  }
+}

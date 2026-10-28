@@ -67,6 +67,9 @@ function initHeroSlider() {
       dot.classList.toggle('active', i === index);
     });
     currentSlide = index;
+    if (window.animateHeroSlide && slides[index]) {
+      window.animateHeroSlide(slides[index]);
+    }
   }
 
   function nextSlide() {
@@ -217,6 +220,35 @@ function initCourseFiltering() {
         card.style.display = 'none';
       }
     });
+
+    // Also highlight matching tuition table row on chuong-trinh-hoc.html
+    const tuitionRows = document.querySelectorAll('.tuition-table tbody tr');
+    if (tuitionRows.length > 0) {
+      tuitionRows.forEach(row => {
+        const rowLevel = row.getAttribute('data-level') || '';
+        if (level === 'all' || rowLevel.includes(level)) {
+          row.style.opacity = '1';
+          if (level !== 'all') {
+            row.style.backgroundColor = 'rgba(216, 24, 36, 0.05)';
+            row.style.transition = 'background-color 0.3s ease, opacity 0.3s ease';
+          } else {
+            row.style.backgroundColor = '';
+          }
+        } else {
+          row.style.opacity = '0.4';
+          row.style.backgroundColor = '';
+        }
+      });
+    }
+
+    // Also sync with sticky form dropdown on chuong-trinh-hoc.html
+    const stickyGrade = document.getElementById('stickyGrade');
+    if (stickyGrade && level !== 'all') {
+      if (level === 'cap1') stickyGrade.value = 'cap1';
+      else if (level === 'cap2') stickyGrade.value = 'lop6';
+      else if (level === 'tuyensinh10') stickyGrade.value = 'lop9';
+      else if (level === 'cap3' || level === 'daihoc') stickyGrade.value = 'cap3';
+    }
 
     const noResultMsg = document.getElementById('noCoursesFound');
     if (noResultMsg) {
@@ -372,10 +404,24 @@ function initFacultyShowcase() {
 
       const filterVal = btn.getAttribute('data-filter') || 'all';
 
+      const matchingCards = [];
       facultyCards.forEach(card => {
         const dept = card.getAttribute('data-department') || '';
         if (filterVal === 'all' || dept.includes(filterVal)) {
           card.style.display = 'flex';
+          matchingCards.push(card);
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (typeof gsap !== 'undefined' && matchingCards.length > 0) {
+        gsap.fromTo(matchingCards,
+          { opacity: 0, y: 15, scale: 0.98 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.04, ease: 'power2.out', clearProps: 'transform' }
+        );
+      } else {
+        matchingCards.forEach(card => {
           card.style.opacity = '0';
           card.style.transform = 'translateY(12px)';
           setTimeout(() => {
@@ -383,10 +429,8 @@ function initFacultyShowcase() {
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
           }, 30);
-        } else {
-          card.style.display = 'none';
-        }
-      });
+        });
+      }
     });
   });
 
@@ -459,17 +503,23 @@ function initFacultyShowcase() {
       nextBtn.setAttribute('aria-disabled', atEnd ? 'true' : 'false');
     }
 
+    let isScrolling = false;
+    function handleScrollClick(direction) {
+      if (isScrolling) return;
+      isScrolling = true;
+      const scrollAmount = direction * 340;
+      scrollTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      setTimeout(() => {
+        isScrolling = false;
+        updateFacultyNavArrows();
+      }, 350);
+    }
+
     if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
-        scrollTrack.scrollBy({ left: -340, behavior: 'smooth' });
-        setTimeout(updateFacultyNavArrows, 350);
-      });
+      prevBtn.addEventListener('click', () => handleScrollClick(-1));
     }
     if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
-        scrollTrack.scrollBy({ left: 340, behavior: 'smooth' });
-        setTimeout(updateFacultyNavArrows, 350);
-      });
+      nextBtn.addEventListener('click', () => handleScrollClick(1));
     }
 
     scrollTrack.addEventListener('scroll', updateFacultyNavArrows, { passive: true });
@@ -974,6 +1024,16 @@ function initCurriculumAccordion() {
       if (!wasActive) {
         parent.classList.add('active');
       }
+    });
+  });
+
+  // Legal accordion on gioi-thieu.html
+  const legalHeaders = document.querySelectorAll('.legal-accordion-header');
+  legalHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+      const parent = header.closest('.legal-accordion-item');
+      if (!parent) return;
+      parent.classList.toggle('active');
     });
   });
 }

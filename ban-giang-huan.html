@@ -20,6 +20,7 @@
   <!-- Core Design System & Subpages CSS -->
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/subpages.css">
+  <link rel="stylesheet" href="assets/css/motion.css">
   
   <!-- Canvas Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -582,7 +583,7 @@
       <button class="modal-close-btn" id="closeFacultyModal" aria-label="Đóng hồ sơ"><i class="fa-solid fa-xmark"></i></button>
       <div class="faculty-modal-grid">
         <div style="text-align: center;">
-          <img id="modalFacultyImg" src="assets/images/teachers/teacher-tham-thu-ngan.jpg" alt="Faculty Portrait" style="width:160px; height:200px; object-fit:cover; border-radius:var(--radius-md); border:3px solid var(--color-primary); margin:0 auto 12px; box-shadow:0 8px 20px rgba(0,0,0,0.1);">
+          <img id="modalFacultyImg" src="assets/images/teachers/teacher-1.jpg" alt="Faculty Portrait" style="width:160px; height:200px; object-fit:cover; border-radius:var(--radius-md); border:3px solid var(--color-primary); margin:0 auto 12px; box-shadow:0 8px 20px rgba(0,0,0,0.1);">
           <span id="modalFacultyDegree" class="section-badge" style="font-size:0.6875rem; padding:3px 10px; width:100%; justify-content:center;">Thạc sĩ Sư phạm</span>
         </div>
         <div>
@@ -659,8 +660,11 @@
     <span id="toastMessage">Đăng ký thành công!</span>
   </div>
 
-  <!-- Main JavaScript -->
+  <!-- Interactive Scripts & Motion Engine -->
+  <script src="assets/js/gsap.min.js"></script>
+  <script src="assets/js/ScrollTrigger.min.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/motion.js"></script>
 </body>
 </html>
 
