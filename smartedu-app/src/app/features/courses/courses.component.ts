@@ -16,6 +16,7 @@ import { LeadFormComponent } from '../../shared/components/lead-form/lead-form.c
       padding: 50px 0 90px;
       background: #FFFFFF;
     }
+    .course-tabs,
     .course-filter-bar {
       display: flex;
       gap: 12px;
@@ -23,6 +24,7 @@ import { LeadFormComponent } from '../../shared/components/lead-form/lead-form.c
       flex-wrap: wrap;
       margin-bottom: 45px;
     }
+    .course-tabs button,
     .course-tab-btn {
       background: #F8FAFC;
       color: #475569;
@@ -37,12 +39,14 @@ import { LeadFormComponent } from '../../shared/components/lead-form/lead-form.c
       align-items: center;
       gap: 6px;
     }
+    .course-tabs button:hover,
     .course-tab-btn:hover {
       background: #FFF1F2;
       color: #D81824;
       border-color: #FECDD3;
       transform: translateY(-2px);
     }
+    .course-tabs button.active,
     .course-tab-btn.active {
       background: #D81824 !important;
       color: #FFFFFF !important;
@@ -229,22 +233,16 @@ import { LeadFormComponent } from '../../shared/components/lead-form/lead-form.c
       <section class="section-courses-main">
         <div class="container">
           <!-- Tầng 2: Grade Level & Module Filter Tabs -->
-          <div class="course-filter-bar">
-            @for (cat of categories(); track cat.moduleId) {
-              <button
-                type="button"
-                class="course-tab-btn"
-                [class.active]="activeFilter() === cat.moduleKey"
-                (click)="selectTab(cat.moduleKey)"
-              >
-                {{ cat.moduleName }}
-              </button>
-            }
+          <div class="course-tabs">
+            <button type="button" class="course-tab-btn" [class.active]="selectedTab() === 'ALL'" (click)="filterTab('ALL')">Tất cả chương trình</button>
+            <button type="button" class="course-tab-btn" [class.active]="selectedTab() === 'Cap2'" (click)="filterTab('Cap2')">KHỐI THCS (LỚP 6 - 9)</button>
+            <button type="button" class="course-tab-btn" [class.active]="selectedTab() === 'ChuyenCap'" (click)="filterTab('ChuyenCap')">KHỐI TUYỂN SINH 10 & CHUYÊN</button>
+            <button type="button" class="course-tab-btn" [class.active]="selectedTab() === 'Cap3'" (click)="filterTab('Cap3')">KHỐI THPT & LUYỆN THI ĐẠI HỌC</button>
           </div>
 
           <!-- Tầng 3: Courses Cards Grid -->
           <div class="courses-grid">
-            @for (course of filteredCourses(); track course.courseId) {
+            @for (course of displayedCourses(); track course.courseId) {
               <div class="course-card">
                 <a [routerLink]="['/chuong-trinh-hoc', course.slug]" class="course-thumb" style="display:block; text-decoration:none;">
                   <img [src]="course.thumbnailUrl || 'assets/images/lop-cap2.png'" [alt]="course.courseName">
@@ -302,11 +300,11 @@ import { LeadFormComponent } from '../../shared/components/lead-form/lead-form.c
             }
           </div>
 
-          @if (filteredCourses().length === 0) {
+          @if (displayedCourses().length === 0) {
             <div style="text-align: center; padding: 60px 20px; color: #64748B;">
               <i class="fa-solid fa-graduation-cap" style="font-size: 3rem; color: #CBD5E1; margin-bottom: 12px; display: block;"></i>
               <p>Hiện chưa có khóa học riêng cho nhóm này.</p>
-              <button type="button" class="course-tab-btn active" style="margin-top: 10px;" (click)="selectTab('ALL')">
+              <button type="button" class="course-tab-btn active" style="margin-top: 10px;" (click)="filterTab('ALL')">
                 Xem tất cả chương trình
               </button>
             </div>
@@ -399,43 +397,19 @@ export class CoursesComponent implements OnInit {
     isActive: true
   });
 
-  categories = signal<CourseCategoryTab[]>([
-    { moduleId: 0, moduleName: 'Tất cả chương trình', moduleKey: 'ALL', displayOrder: 0 },
-    { moduleId: 1, moduleName: 'KHỐI THCS (LỚP 6 - 9)', moduleKey: 'Cap2', displayOrder: 1 },
-    { moduleId: 2, moduleName: 'KHỐI TUYỂN SINH 10 & CHUYÊN', moduleKey: 'ChuyenCap', displayOrder: 2 },
-    { moduleId: 3, moduleName: 'KHỐI THPT & LUYỆN THI ĐẠI HỌC', moduleKey: 'Cap3', displayOrder: 3 }
-  ]);
-  courses = signal<Course[]>([]);
-  activeFilter = signal<string>('ALL');
+  allCourses = signal<Course[]>([]);
+  displayedCourses = signal<Course[]>([]);
+  selectedTab = signal<string>('ALL');
   openAccordion = signal<number>(1);
-
-  filteredCourses = computed(() => {
-    const filter = this.activeFilter();
-    const list = this.courses();
-    if (!filter || filter === 'ALL' || filter.toLowerCase() === 'all') {
-      return list;
-    }
-
-    return list.filter(c => {
-      if (!c.gradeLevel) return false;
-      if (c.gradeLevel === filter || c.gradeLevel.toLowerCase() === filter.toLowerCase()) {
-        return true;
-      }
-      if (filter === 'ChuyenCap' && (c.gradeLevel.toLowerCase() === 'chuyencap' || c.gradeLevel.toLowerCase() === 'tuyensinh10')) {
-        return true;
-      }
-      return false;
-    });
-  });
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       if (params['cap']) {
         const raw = (params['cap'] || '').toLowerCase();
-        if (raw === 'cap2') this.selectTab('Cap2');
-        else if (raw === 'chuyencap' || raw === 'tuyensinh10') this.selectTab('ChuyenCap');
-        else if (raw === 'cap3') this.selectTab('Cap3');
-        else this.selectTab('ALL');
+        if (raw === 'cap2') this.filterTab('Cap2');
+        else if (raw === 'chuyencap' || raw === 'tuyensinh10') this.filterTab('ChuyenCap');
+        else if (raw === 'cap3') this.filterTab('Cap3');
+        else this.filterTab('ALL');
       }
     });
 
@@ -447,39 +421,41 @@ export class CoursesComponent implements OnInit {
     });
 
     this.courseService.getCoursesList().subscribe(res => {
-      if (res) {
-        if (res.categories && res.categories.length > 0) {
-          const filteredTabs = res.categories.filter(cat => {
-            const k = (cat.moduleKey || '').toLowerCase();
-            const n = (cat.moduleName || '').toLowerCase();
-            return !k.includes('daihoc') && !k.includes('dgnl') && !n.includes('đgnl') && !n.includes('đại học');
-          });
-          if (filteredTabs.length > 0) {
-            this.categories.set(filteredTabs);
-          }
-        }
-
-        if (res.courses && res.courses.length > 0) {
-          const filteredList = res.courses.filter(c => {
-            const g = (c.gradeLevel || '').toLowerCase();
-            const s = (c.slug || '').toLowerCase();
-            const n = (c.courseName || '').toLowerCase();
-            return !g.includes('daihoc') && !g.includes('dgnl') && !s.includes('daihoc') && !s.includes('dgnl') && !n.includes('đgnl') && !n.includes('đại học');
-          });
-          this.courses.set(filteredList);
-        }
+      if (res && res.courses && res.courses.length > 0) {
+        this.allCourses.set(res.courses);
+        this.filterTab(this.selectedTab());
         this.cdr.markForCheck();
       }
     });
   }
 
-  selectTab(tabKey: string) {
-    this.activeFilter.set(tabKey);
+  filterTab(tabKey: string) {
+    this.selectedTab.set(tabKey);
+    if (tabKey === 'ALL') {
+      this.displayedCourses.set(this.allCourses());
+    } else {
+      this.displayedCourses.set(
+        this.allCourses().filter(c => {
+          if (!c.gradeLevel) return false;
+          if (c.gradeLevel === tabKey || c.gradeLevel.toLowerCase() === tabKey.toLowerCase()) {
+            return true;
+          }
+          if (tabKey === 'ChuyenCap' && (c.gradeLevel.toLowerCase() === 'chuyencap' || c.gradeLevel.toLowerCase() === 'tuyensinh10')) {
+            return true;
+          }
+          return false;
+        })
+      );
+    }
     this.cdr.markForCheck();
   }
 
+  selectTab(tabKey: string) {
+    this.filterTab(tabKey);
+  }
+
   setFilter(filter: string) {
-    this.selectTab(filter);
+    this.filterTab(filter);
   }
 
   toggleAccordion(index: number) {

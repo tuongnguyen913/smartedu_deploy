@@ -127,7 +127,7 @@ public class CoursesController : ControllerBase
                 Grade = c.Grade,
                 Subject = c.Subject,
                 ShortDescription = c.ShortDescription,
-                ThumbnailUrl = c.ThumbnailUrl,
+                ThumbnailUrl = !string.IsNullOrWhiteSpace(c.ThumbnailUrl) ? c.ThumbnailUrl : (c.GradeLevel == "ChuyenCap" ? "assets/images/lop-cap3.png" : "assets/images/lop-cap2.png"),
                 TuitionFee = c.TuitionFee,
                 TuitionPeriod = c.TuitionPeriod,
                 ScheduleSummary = c.ScheduleSummary,
@@ -138,6 +138,31 @@ public class CoursesController : ControllerBase
                 IsFeatured = c.IsFeatured,
                 IsActive = c.IsActive
             }).ToList();
+
+            // Đảm bảo khối THPT (Cap3) luôn có mặt trong danh sách (kể cả khi DB PostgreSQL chưa nạp dòng Cap3)
+            if (!courseList.Any(c => c.GradeLevel != null && c.GradeLevel.Equals("Cap3", StringComparison.OrdinalIgnoreCase)))
+            {
+                courseList.Add(new CourseListItemDto
+                {
+                    CourseId = 4,
+                    CourseName = "Khối THPT & Luyện Thi Đại Học (Lớp 10 – 12)",
+                    Slug = "khoi-thpt-dinh-huong-dai-hoc",
+                    GradeLevel = "Cap3",
+                    Grade = "Lớp 10 - Lớp 12",
+                    Subject = "Toán, Vật Lý, Hóa Học, Ngữ Văn, Tiếng Anh",
+                    ShortDescription = "Nắm chắc kiến thức phân hóa nâng cao, bám sát phương pháp đổi mới của Bộ GD&ĐT, chuẩn bị hồ sơ xét tuyển.",
+                    ThumbnailUrl = "assets/images/anh-ai-ung-dung.jpg",
+                    TuitionFee = 2500000,
+                    TuitionPeriod = "/tháng",
+                    ScheduleSummary = "3 buổi / tuần",
+                    ClassSizeMax = 15,
+                    HasFreeTutoringGuarantee = true,
+                    HasTuitionRefundGuarantee = true,
+                    DisplayOrder = 4,
+                    IsFeatured = true,
+                    IsActive = true
+                });
+            }
 
             // Render trực tiếp từ DB
             response.Categories = categoryTabs;
@@ -202,6 +227,48 @@ public class CoursesController : ControllerBase
 
             if (course == null || !(course.IsActive ?? true))
             {
+                // Fallback cho khóa THPT nếu DB chưa có dòng Cap3
+                if (cleanSlug.Contains("thpt", StringComparison.OrdinalIgnoreCase) ||
+                    cleanSlug.Contains("cap3", StringComparison.OrdinalIgnoreCase) ||
+                    parsedId == 4)
+                {
+                    return Ok(new CourseDetailDto
+                    {
+                        CourseId = 4,
+                        CourseName = "Khối THPT & Luyện Thi Đại Học (Lớp 10 – 12)",
+                        Slug = "khoi-thpt-dinh-huong-dai-hoc",
+                        GradeLevel = "Cap3",
+                        Grade = "Lớp 10 - Lớp 12",
+                        Subject = "Toán, Vật Lý, Hóa Học, Ngữ Văn, Tiếng Anh",
+                        ShortDescription = "Nắm chắc kiến thức phân hóa nâng cao, bám sát phương pháp đổi mới của Bộ GD&ĐT, chuẩn bị hồ sơ xét tuyển.",
+                        ThumbnailUrl = "assets/images/anh-ai-ung-dung.jpg",
+                        BannerUrl = "assets/images/anh-ai-ung-dung.jpg",
+                        TuitionFee = 2500000,
+                        TuitionPeriod = "/tháng",
+                        ScheduleSummary = "3 buổi / tuần",
+                        ClassSizeMax = 15,
+                        HasFreeTutoringGuarantee = true,
+                        HasTuitionRefundGuarantee = true,
+                        ContentHtml = @"
+                            <h2>1. Giới thiệu tổng quan chương trình THPT</h2>
+                            <p>Chương trình Khối THPT & Luyện Thi Đại Học tại SmartEdu Academy được thiết kế đặc thù cho giai đoạn then chốt Lớp 10 - 12. Nội dung bám sát ma trận đề thi Tốt nghiệp THPT và kỳ thi ĐGNL ĐHQG TP.HCM.</p>
+                            <h2>2. Mục tiêu năng lực đầu ra</h2>
+                            <ul>
+                                <li><strong>Chuyên đề phân hóa:</strong> Quét sạch các dạng bài vận dụng cao chiếm 20-30% đề thi chính thức.</li>
+                                <li><strong>Kỹ năng bấm máy & tư duy nhanh:</strong> Tối ưu hóa thời gian làm bài thi trắc nghiệm khách quan.</li>
+                                <li><strong>Chiến thuật phòng thi:</strong> Định vị chính xác mục tiêu tổ hợp xét tuyển đại học NV1.</li>
+                            </ul>
+                            <h2>3. Cam kết đồng hành</h2>
+                            <p>Được học trực tiếp cùng các Thầy Cô giàu kinh nghiệm bồi dưỡng học sinh giỏi từ ĐH Sư Phạm TP.HCM, kèm 1:1 miễn phí ngoài giờ khi gặp chuyên đề khó.</p>",
+                        Syllabuses = new List<CourseSyllabusDto>
+                        {
+                            new() { SyllabusId = 401, CourseId = 4, SemesterName = "Giai đoạn 1: Nền Tảng Chuyên Sâu", TopicTitle = "Chuyên Đề Nâng Cao & Phân Hóa Lớp 10-11", TopicContent = "Củng cố các mảng kiến thức khó, kỹ năng bấm máy tính Casio và tư duy liên môn.", DisplayOrder = 1 },
+                            new() { SyllabusId = 402, CourseId = 4, SemesterName = "Giai đoạn 2: Tăng Tốc Lớp 12", TopicTitle = "Quét Kiến Thức Trọng Tâm Lớp 12 GDPT Mới", TopicContent = "Đi sâu vào các dạng bài liên hệ thực tiễn và câu hỏi bẫy thường gặp trong đề thi chuẩn Bộ.", DisplayOrder = 2 },
+                            new() { SyllabusId = 403, CourseId = 4, SemesterName = "Giai đoạn 3: Thực Chiến & Về Đích", TopicTitle = "Luyện Đề Chuẩn Ma Trận & Thi Thử Định Kỳ", TopicContent = "Luyện bộ đề độc quyền, rèn tâm lý thi cử vững vàng, tối ưu barem điểm từng phân môn.", DisplayOrder = 3 }
+                        }
+                    });
+                }
+
                 return NotFound(new { message = "Không tìm thấy khóa học yêu cầu." });
             }
 
@@ -222,6 +289,45 @@ public class CoursesController : ControllerBase
                 })
                 .ToListAsync();
 
+            // Nếu DB chưa có Syllabus cho khóa này, tự động sinh lộ trình riêng theo môn học
+            if (syllabuses.Count == 0)
+            {
+                if (course.CourseId == 2 || course.Subject.Contains("Khoa học", StringComparison.OrdinalIgnoreCase))
+                {
+                    syllabuses = new List<CourseSyllabusDto>
+                    {
+                        new() { SyllabusId = 201, CourseId = course.CourseId, SemesterName = "Giai đoạn 1: Khám Phá Hiện Tượng", TopicTitle = "Hệ Thống Hóa Bản Chất Vật Lý - Hóa Học - Sinh Học", TopicContent = "Tiếp cận môn KHTN qua sơ đồ tư duy trực quan, xóa bỏ phương pháp học vẹt công thức.", DisplayOrder = 1 },
+                        new() { SyllabusId = 202, CourseId = course.CourseId, SemesterName = "Giai đoạn 2: Tích Hợp Liên Môn", TopicTitle = "Kỹ Năng Phân Tích Biểu Đồ & Bài Toán Thực Tế", TopicContent = "Rèn luyện đọc hiểu số liệu thí nghiệm, phân tích nguyên nhân - kết quả trong các hiện tượng đời sống.", DisplayOrder = 2 },
+                        new() { SyllabusId = 203, CourseId = course.CourseId, SemesterName = "Giai đoạn 3: Bứt Phá Điểm 9-10", TopicTitle = "Luyện Đề Kiểm Tra Định Kỳ & Học Kỳ Chuẩn Sở", TopicContent = "Giải các bộ đề thi học kỳ chọn lọc, khắc phục lỗi diễn đạt và trình bày chuẩn barem điểm.", DisplayOrder = 3 }
+                    };
+                }
+                else if (course.CourseId == 3 || course.GradeLevel == "ChuyenCap")
+                {
+                    syllabuses = new List<CourseSyllabusDto>
+                    {
+                        new() { SyllabusId = 301, CourseId = course.CourseId, SemesterName = "Giai đoạn 1: Quét Sạch Lỗ Hổng", TopicTitle = "12 Dạng Toán Thực Tế Kinh Điển Trong Đề Thi Vào 10", TopicContent = "Chuyên đề lãi suất, hình học không gian thực tế, hàm số bậc nhất và bài toán năng suất.", DisplayOrder = 1 },
+                        new() { SyllabusId = 302, CourseId = course.CourseId, SemesterName = "Giai đoạn 2: Chinh Phục Điểm 8-9", TopicTitle = "Tứ Giác Nội Tiếp & Bất Đẳng Thức Phân Hóa", TopicContent = "Rèn phương pháp vẽ đường phụ hình học và tư duy giải quyết câu hỏi phân loại học sinh giỏi.", DisplayOrder = 2 },
+                        new() { SyllabusId = 303, CourseId = course.CourseId, SemesterName = "Giai đoạn 3: Vượt Vũ Môn", TopicTitle = "Thi Thử Nghiêm Ngặt & Rèn Luyện Tâm Lý Phòng Thi", TopicContent = "Mô phỏng 100% điều kiện phòng thi Sở GD&ĐT TP.HCM, rọc phách chấm chéo và chỉ ra lỗi trừ điểm vặt.", DisplayOrder = 3 }
+                    };
+                }
+            }
+
+            // Tạo ContentHtml phong phú riêng biệt theo từng khóa học nếu trong DB để trống
+            var generatedContentHtml = !string.IsNullOrWhiteSpace(course.ContentHtml)
+                ? course.ContentHtml
+                : $@"
+                    <h2>1. Giới thiệu tổng quan: {course.CourseName}</h2>
+                    <p>{course.ShortDescription}</p>
+                    {(!string.IsNullOrWhiteSpace(course.PsychologyOverview) ? $"<h3>Thực trạng & Tâm lý học sinh</h3><p>{course.PsychologyOverview}</p>" : "")}
+                    <h2>2. Chuẩn đầu ra & Mục tiêu đào tạo</h2>
+                    <ul>
+                        {(!string.IsNullOrWhiteSpace(course.TargetKnowledge) ? $"<li><strong>Kiến thức:</strong> {course.TargetKnowledge}</li>" : "<li><strong>Kiến thức cốt lõi:</strong> Nắm vững 100% định nghĩa, định lý và công thức trọng tâm.</li>")}
+                        {(!string.IsNullOrWhiteSpace(course.TargetThinking) ? $"<li><strong>Tư duy logic:</strong> {course.TargetThinking}</li>" : "<li><strong>Tư duy phản biện:</strong> Rèn luyện kỹ năng phân tích đề bài mạch lạc, không học vẹt.</li>")}
+                        {(!string.IsNullOrWhiteSpace(course.TargetSkills) ? $"<li><strong>Kỹ năng phòng thi:</strong> {course.TargetSkills}</li>" : "<li><strong>Kỹ năng làm bài:</strong> Phân bổ thời gian thi hợp lý và trình bày chuẩn barem điểm.</li>")}
+                    </ul>
+                    <h2>3. Quyền lợi học sinh tại SmartEdu Academy</h2>
+                    <p>Sĩ số tối đa <strong>{course.ClassSizeMax ?? 15} học sinh/lớp</strong> giúp giáo viên ĐH Sư Phạm TP.HCM theo sát từng em. Học sinh được <strong>phụ đạo 1:1 miễn phí ngoài giờ</strong> và cam kết hoàn 100% học phí nếu không tiến bộ.</p>";
+
             var dto = new CourseDetailDto
             {
                 CourseId = course.CourseId,
@@ -231,9 +337,10 @@ public class CoursesController : ControllerBase
                 Grade = course.Grade,
                 Subject = course.Subject,
                 ShortDescription = course.ShortDescription,
-                ContentHtml = course.ContentHtml,
-                ThumbnailUrl = course.ThumbnailUrl,
+                ContentHtml = generatedContentHtml,
+                ThumbnailUrl = !string.IsNullOrWhiteSpace(course.ThumbnailUrl) ? course.ThumbnailUrl : (course.GradeLevel == "ChuyenCap" ? "assets/images/lop-cap3.png" : "assets/images/lop-cap2.png"),
                 BannerUrl = course.BannerUrl,
+                HeroBanner = course.BannerUrl,
                 PsychologyOverview = course.PsychologyOverview,
                 TargetKnowledge = course.TargetKnowledge,
                 TargetThinking = course.TargetThinking,
@@ -247,7 +354,8 @@ public class CoursesController : ControllerBase
                 SeoTitle = !string.IsNullOrWhiteSpace(course.SeoTitle) ? course.SeoTitle : course.CourseName,
                 SeoDescription = !string.IsNullOrWhiteSpace(course.SeoDescription) ? course.SeoDescription : course.ShortDescription,
                 SeoKeywords = course.SeoKeywords,
-                Syllabuses = syllabuses
+                Syllabuses = syllabuses,
+                SyllabusList = syllabuses
             };
 
             return Ok(dto);
