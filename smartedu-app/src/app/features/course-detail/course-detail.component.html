@@ -1,0 +1,324 @@
+<main class="course-detail-page">
+  <!-- BREADCRUMB -->
+  <section class="subpage-breadcrumb-bar">
+    <div class="container">
+      <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item">
+            <a routerLink="/"><i class="fa-solid fa-house"></i> Trang chủ</a>
+          </li>
+          <li class="breadcrumb-separator">
+            <i class="fa-solid fa-chevron-right"></i>
+          </li>
+          <li class="breadcrumb-item">
+            <a routerLink="/chuong-trinh-hoc">Chương trình học</a>
+          </li>
+          <li class="breadcrumb-separator">
+            <i class="fa-solid fa-chevron-right"></i>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ course()?.courseName || 'Chi tiết khóa học' }}
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <!-- LOADING STATE -->
+  @if (isLoading()) {
+    <div class="container loading-state-wrapper">
+      <i class="fa-solid fa-circle-notch fa-spin"></i>
+      <p>Đang tải thông tin khóa học...</p>
+    </div>
+  }
+
+  <!-- NOT FOUND STATE -->
+  @if (!isLoading() && isNotFound()) {
+    <div class="container not-found-state-wrapper">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <h2>Không tìm thấy khóa học</h2>
+      <p>Khóa học bạn đang tìm kiếm không tồn tại hoặc đã thay đổi đường dẫn.</p>
+      <a routerLink="/chuong-trinh-hoc" class="btn-back-courses">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách chương trình
+      </a>
+    </div>
+  }
+
+  <!-- COURSE DETAIL MAIN CONTENT -->
+  @if (!isLoading() && course(); as c) {
+    <!-- HERO HEADER SECTION -->
+    <section class="course-hero">
+      <div class="container">
+        <div class="course-hero-content">
+          <div class="course-badge-row">
+            <span class="badge-grade">
+              {{ formatGradeBadge(c) }}
+            </span>
+            <span class="badge-subject">
+              <i class="fa-solid fa-graduation-cap"></i> {{ c.subject }}
+            </span>
+          </div>
+
+          <h1 class="course-hero-title">
+            {{ c.courseName }}
+          </h1>
+
+          <p class="course-hero-desc">
+            {{ c.shortDescription }}
+          </p>
+
+          <!-- HIGHLIGHT STATS BAR -->
+          <div class="course-stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-receipt"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Học phí</span>
+                <strong class="stat-val text-red">
+                  @if (c.tuitionFee && c.tuitionFee > 0) {
+                    {{ c.tuitionFee | number }}đ {{ c.tuitionPeriod ? '/' + c.tuitionPeriod : '/ tháng' }}
+                  } @else {
+                    Liên hệ tư vấn
+                  }
+                </strong>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Lịch học</span>
+                <strong class="stat-val">{{ c.scheduleSummary || '2–3 buổi / tuần' }}</strong>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Sĩ số lớp</span>
+                <strong class="stat-val">Tối đa {{ c.classSizeMax || 15 }} học sinh / lớp</strong>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Cam kết chất lượng</span>
+                <strong class="stat-val">Hoàn phí 100% nếu không tiến bộ</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- HERO ACTION BUTTONS -->
+          <div class="course-hero-actions">
+            <button type="button" class="btn-cta-enroll" (click)="openAssessment()">
+              <i class="fa-solid fa-bolt"></i>
+              <span>ĐĂNG KÝ HỌC THỬ MIỄN PHÍ</span>
+            </button>
+            <a href="https://zalo.me" target="_blank" rel="noopener noreferrer" class="btn-cta-zalo">
+              <i class="fa-solid fa-comment-dots"></i>
+              <span>Tư vấn 1:1 qua Zalo</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN BODY GRID: LEFT CONTENT + RIGHT SIDEBAR -->
+    <section class="course-body-section">
+      <div class="container">
+        <div class="course-body-layout">
+          <!-- LEFT COLUMN: SYLLABUS & CONTENT -->
+          <div class="course-main-column">
+            
+            <!-- KHUNG LỘ TRÌNH HỌC (SYLLABUS ACCORDION) -->
+            @if (syllabuses().length > 0) {
+              <div class="course-section-block syllabus-block">
+                <div class="block-header">
+                  <div class="section-badge">
+                    <i class="fa-solid fa-list-check"></i> Khung Lộ Trình Đào Tạo
+                  </div>
+                  <h2 class="block-title">Lộ Trình Học &amp; Chủ Đề Trọng Tâm</h2>
+                  <p class="block-subtitle">Thiết kế phân kỳ tinh gọn, giúp học sinh xóa tan hổng kiến thức và bứt phá từng nấc thang điểm số.</p>
+                </div>
+
+                <div class="syllabus-accordion-list">
+                  @for (syl of syllabuses(); track syl.syllabusId || $index) {
+                    <div class="syllabus-accordion-item" [class.open]="activeAccordionIndex() === $index">
+                      <div class="syllabus-header" (click)="toggleAccordion($index)">
+                        <div class="syllabus-title-wrap">
+                          <span class="syllabus-step-num">0{{ $index + 1 }}</span>
+                          <div class="syllabus-heading-text">
+                            <span class="syllabus-phase-badge">{{ syl.semesterName || ('Giai đoạn ' + ($index + 1)) }}</span>
+                            <h3 class="syllabus-topic-title">{{ syl.topicTitle }}</h3>
+                          </div>
+                        </div>
+                        <i class="fa-solid chevron-icon" [class.fa-chevron-down]="activeAccordionIndex() !== $index" [class.fa-chevron-up]="activeAccordionIndex() === $index"></i>
+                      </div>
+
+                      @if (activeAccordionIndex() === $index) {
+                        <div class="syllabus-content-body">
+                          <p>{{ syl.topicContent || 'Nội dung chi tiết đang được cập nhật.' }}</p>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- NỘI DUNG CHI TIẾT KHÓA HỌC (RENDER TỪ ContentHtml) -->
+            <div class="course-section-block content-html-block">
+              <div class="block-header">
+                <div class="section-badge">
+                  <i class="fa-solid fa-book-open"></i> Chi Tiết Khóa Học
+                </div>
+                <h2 class="block-title">Thông Tin Chi Tiết &amp; Phương Pháp Giảng Dạy</h2>
+              </div>
+
+              <div class="course-html-rendered" [innerHTML]="sanitizedContent()"></div>
+            </div>
+
+            <!-- CHÍNH SÁCH CAM KẾT & QUYỀN LỢI HỌC SINH -->
+            <div class="course-section-block guarantee-block">
+              <h3 class="guarantee-title">
+                <i class="fa-solid fa-award text-red"></i> Quyền Lợi Độc Quyền Khi Học Tại SmartEdu
+              </h3>
+              <div class="guarantee-grid">
+                <div class="guarantee-item">
+                  <div class="guarantee-icon"><i class="fa-solid fa-user-group"></i></div>
+                  <div>
+                    <h4>Kèm 1:1 Ngoài Giờ Miễn Phí</h4>
+                    <p>Học sinh gặp bài khó trên trường hoặc chưa hiểu bài trên lớp được phụ đạo riêng không tính thêm học phí.</p>
+                  </div>
+                </div>
+                <div class="guarantee-item">
+                  <div class="guarantee-icon"><i class="fa-solid fa-file-contract"></i></div>
+                  <div>
+                    <h4>Cam Kết Hoàn Học Phí</h4>
+                    <p>Hoàn phí 100% bằng hợp đồng minh bạch nếu học sinh tham gia học tập nghiêm túc nhưng không có tiến bộ.</p>
+                  </div>
+                </div>
+                <div class="guarantee-item">
+                  <div class="guarantee-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+                  <div>
+                    <h4>Báo Cáo Tiến Bộ Sau Mỗi Buổi</h4>
+                    <p>Phụ huynh theo dõi sát sao điểm chuyên cần, mức độ tiếp thu và bài tập về nhà của con qua sổ điện tử Zalo.</p>
+                  </div>
+                </div>
+                <div class="guarantee-item">
+                  <div class="guarantee-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                  <div>
+                    <h4>Hệ Thống Đề Thi Thử Độc Quyền</h4>
+                    <p>Tiếp cận kho đề thi tuyển sinh &amp; học kỳ chuẩn ma trận Sở GD&ĐT TP.HCM với giải pháp chấm chéo rọc phách.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: STICKY SUMMARY CARD & OTHER COURSES -->
+          <div class="course-sidebar-column">
+            <div class="sticky-card-wrapper">
+              <!-- QUICK INFO CARD -->
+              <div class="quick-info-card">
+                <div class="quick-info-thumb">
+                  <img [src]="c.thumbnailUrl || 'assets/images/lop-cap2.png'" [alt]="c.courseName">
+                  <span class="badge-grade-floating">{{ formatGradeBadge(c) }}</span>
+                </div>
+
+                <div class="quick-info-body">
+                  <div class="quick-price-wrap">
+                    <span class="quick-price-label">Mức học phí:</span>
+                    <div class="quick-price-num">
+                      @if (c.tuitionFee && c.tuitionFee > 0) {
+                        {{ c.tuitionFee | number }}đ <small>{{ c.tuitionPeriod ? '/' + c.tuitionPeriod : '/tháng' }}</small>
+                      } @else {
+                        Liên hệ tư vấn
+                      }
+                    </div>
+                  </div>
+
+                  <ul class="quick-info-list">
+                    <li>
+                      <i class="fa-solid fa-graduation-cap"></i>
+                      <span>Môn học: <strong>{{ c.subject }}</strong></span>
+                    </li>
+                    <li>
+                      <i class="fa-solid fa-users"></i>
+                      <span>Sĩ số: <strong>Tối đa {{ c.classSizeMax || 15 }} học sinh</strong></span>
+                    </li>
+                    <li>
+                      <i class="fa-solid fa-calendar-days"></i>
+                      <span>Lịch học: <strong>{{ c.scheduleSummary || '2–3 buổi / tuần' }}</strong></span>
+                    </li>
+                    <li>
+                      <i class="fa-solid fa-shield-halved"></i>
+                      <span>Bảo đảm: <strong>Kèm 1:1 &amp; Hoàn phí</strong></span>
+                    </li>
+                    <li>
+                      <i class="fa-solid fa-location-dot"></i>
+                      <span>Địa điểm: <strong>Bình Phú, Quận 6, TP.HCM</strong></span>
+                    </li>
+                  </ul>
+
+                  <button type="button" class="btn-enroll-full" (click)="openAssessment()">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>ĐĂNG KÝ HỌC THỬ 02 BUỔI 0Đ</span>
+                  </button>
+
+                  <p class="quick-info-note">
+                    <i class="fa-solid fa-circle-check"></i> Đánh giá năng lực 1:1 miễn phí cùng giáo viên Sư Phạm
+                  </p>
+                </div>
+              </div>
+
+              <!-- OTHER COURSES WIDGET -->
+              @if (otherCourses().length > 0) {
+                <div class="other-courses-widget">
+                  <h4 class="widget-title">
+                    <i class="fa-solid fa-layer-group text-red"></i> Các Khóa Học Khác
+                  </h4>
+                  <div class="other-courses-list">
+                    @for (item of otherCourses(); track item.courseId) {
+                      @if (item.courseId !== c.courseId) {
+                        <a [routerLink]="['/chuong-trinh-hoc', item.slug]" class="other-course-item">
+                          <img [src]="item.thumbnailUrl || 'assets/images/lop-cap2.png'" [alt]="item.courseName">
+                          <div class="other-course-info">
+                            <span class="other-course-badge">{{ item.grade || formatGradeBadge(item) }}</span>
+                            <h5 class="other-course-name">{{ item.courseName }}</h5>
+                            <span class="other-course-price">
+                              @if (item.tuitionFee && item.tuitionFee > 0) {
+                                {{ item.tuitionFee | number }}đ
+                              } @else {
+                                Liên hệ
+                              }
+                            </span>
+                          </div>
+                        </a>
+                      }
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM LEAD REGISTRATION SECTION -->
+    <section class="section-registration" style="background:#0F172A; padding:80px 0; color:#FFFFFF;">
+      <div class="container">
+        <div style="max-width: 700px; margin: 0 auto; background: #1E293B; border: 1px solid #334155; border-radius: 20px; padding: 40px 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <span class="section-badge" style="background:rgba(216,24,36,0.2); color:#FCA5A5; border-color:#D81824;"><i class="fa-solid fa-gift"></i> Đồng hành cùng con</span>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #FFFFFF; margin-top: 8px;">Đăng Ký Đánh Giá Năng Lực &amp; Học Thử 02 Buổi 0đ</h3>
+            <p style="font-size: 0.875rem; color: #94A3B8; margin-top: 4px;">Kiểm tra miễn phí 1:1 cùng Thầy Cô ĐH Sư Phạm để tìm đúng lỗ hổng và nhận lộ trình tối ưu cho khóa <strong>{{ c.courseName }}</strong>.</p>
+          </div>
+          <app-lead-form></app-lead-form>
+        </div>
+      </div>
+    </section>
+  }
+</main>
+

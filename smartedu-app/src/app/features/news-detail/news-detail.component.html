@@ -1,0 +1,160 @@
+<main style="background: #FFFFFF; min-height: 80vh; padding-bottom: 80px;">
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div style="padding: 100px 20px; text-align: center;">
+      <i class="fa-solid fa-spinner fa-spin" style="font-size: 2.5rem; color: #D81824; margin-bottom: 16px;"></i>
+      <p style="color: #64748B; font-weight: 500;">Đang nạp dữ liệu bài viết...</p>
+    </div>
+  }
+
+  <!-- Error / 404 State -->
+  @else if (isNotFound()) {
+    <div class="container" style="padding: 80px 20px; text-align: center;">
+      <div style="width: 80px; height: 80px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 24px;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h2 style="font-size: 1.85rem; font-weight: 800; color: #0F172A; margin-bottom: 12px;">Không Tìm Thấy Bài Viết</h2>
+      <p style="color: #64748B; max-width: 520px; margin: 0 auto 28px; line-height: 1.6;">
+        Bài viết bạn đang tìm kiếm không tồn tại hoặc đã được chuyển sang đường dẫn khác.
+      </p>
+      <a routerLink="/tin-tuc" class="btn-register btn-red" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 50px; text-decoration: none;">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Quay lại trang Tin Tức &amp; Cẩm Nang</span>
+      </a>
+    </div>
+  }
+
+  <!-- Success Loaded Article -->
+  @else if (article()) {
+    @let data = article()!;
+
+    <!-- 1. Breadcrumb Động Chuẩn -->
+    <div style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; padding: 10px 0;">
+      <div class="container">
+        <nav class="breadcrumb-wrapper" aria-label="breadcrumb" style="padding: 0;">
+          <ol class="breadcrumb-list">
+            <li class="breadcrumb-item">
+              <a routerLink="/"><i class="fa-solid fa-house"></i> Trang chủ</a>
+            </li>
+            <li class="breadcrumb-separator">
+              <i class="fa-solid fa-chevron-right"></i>
+            </li>
+            <li class="breadcrumb-item">
+              <a routerLink="/tin-tuc">Tin tức &amp; Cẩm nang</a>
+            </li>
+            <li class="breadcrumb-separator">
+              <i class="fa-solid fa-chevron-right"></i>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              {{ data.title }}
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <!-- 2. Centered Reading Container (760px optimized) -->
+    <div class="reading-container">
+
+      <!-- Header bài viết -->
+      <header class="article-header">
+        <span class="news-category-badge">
+          <i class="fa-solid fa-bookmark"></i> {{ data.categoryName }}
+        </span>
+        <h1 class="article-title">{{ data.title }}</h1>
+
+        <!-- Author & Meta bar -->
+        <div class="article-author-bar">
+          <img src="assets/images/teachers/teacher-1.jpg" [alt]="data.author || 'Tác giả'" class="article-author-avatar">
+          <div class="article-author-info">
+            <div class="article-author-name">{{ data.author }} &bull; SmartEdu Academy</div>
+            <div class="article-author-date">
+              Đăng ngày {{ (data.published | date:'dd/MM/yyyy') || 'Mới cập nhật' }} &bull; {{ readingTime() }} phút đọc &bull; {{ data.views }} lượt xem
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured Picture -->
+        @if (data.picture) {
+          <div class="article-featured-image">
+            <img [src]="data.picture" [alt]="data.title">
+          </div>
+        }
+      </header>
+
+      <!-- Tóm tắt ngắn (Brief) nếu có -->
+      @if (data.brief) {
+        <div style="font-size: 1.125rem; font-weight: 500; color: #334155; line-height: 1.7; margin-bottom: 24px; padding: 16px 20px; background: #F8FAFC; border-left: 4px solid #D81824; border-radius: 4px;">
+          {{ data.brief }}
+        </div>
+      }
+
+      <!-- 3. Nội dung chính (HTML Content sanitized) -->
+      <article class="article-body" [innerHTML]="sanitizedContent()">
+      </article>
+
+      <!-- Mid-Post CTA Banner (Đặc quyền học thử) -->
+      <div class="mid-post-cta">
+        <span class="section-badge" style="background:#FFF1F2; color:#D81824; border-color:rgba(216,24,36,0.2);">
+          <i class="fa-solid fa-gift"></i> Đặc quyền hè 2026
+        </span>
+        <h4>Con Bạn Đang Bị Mất Gốc Môn Học Hoặc Chuẩn Bị Vào Lớp Chuyển Cấp?</h4>
+        <p>Đăng ký ngay buổi <strong>Kiểm tra năng lực 1:1 miễn phí</strong> cùng Thầy Cô ĐH Sư Phạm TP.HCM để nhận phác đồ lấy lại căn bản và bứt phá điểm số!</p>
+        <button type="button" class="btn-register btn-red" (click)="openAssessment()" style="padding:12px 28px; border-radius: 50px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+          <span>Đăng Ký Test Đầu Vào 0đ <i class="fa-solid fa-arrow-right"></i></span>
+        </button>
+      </div>
+
+      <!-- Social Share Bar -->
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:24px 0; border-top:1px solid #E2E8F0; border-bottom:1px solid #E2E8F0; margin:40px 0; flex-wrap:wrap; gap:16px;">
+        <div style="font-weight:700; color:#0F172A; display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-share-nodes" style="color:#D81824;"></i> Chia sẻ bài viết này:
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a [href]="'https://www.facebook.com/sharer/sharer.php?u=' + currentUrl()" target="_blank" rel="noopener" class="social-link" style="background:#1877F2; color:#FFF;" aria-label="Share Facebook">
+            <i class="fa-brands fa-facebook-f"></i>
+          </a>
+          <a [href]="'https://zalo.me/share?url=' + currentUrl()" target="_blank" rel="noopener" class="social-link" style="background:#0284C7; color:#FFF;" aria-label="Share Zalo">
+            <i class="fa-solid fa-comment-dots"></i>
+          </a>
+          <button type="button" class="social-link" (click)="copyLink()" style="background:#64748B; color:#FFF;" aria-label="Copy Link">
+            <i class="fa-solid fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. Related Articles Section -->
+      @if (relatedArticles().length > 0) {
+        <div style="margin-top: 50px;">
+          <h3 style="font-size: 1.45rem; font-weight: 800; color: #0F172A; margin-bottom: 24px;">
+            <i class="fa-solid fa-newspaper" style="color: #D81824; margin-right: 8px;"></i> Bài Viết Cùng Chuyên Mục
+          </h3>
+          <div class="related-grid">
+            @for (item of relatedArticles(); track item.articleId) {
+              <div class="course-item-card">
+                <a [routerLink]="['/tin-tuc', item.slug]" class="course-card-thumb">
+                  <img [src]="item.picture || 'assets/images/students/students-lop-hoc-thuc-te.jpg'" [alt]="item.title">
+                </a>
+                <div style="padding:16px;">
+                  <span class="course-subject-tag"><i class="fa-regular fa-folder"></i> {{ item.categoryName }}</span>
+                  <h4 style="font-size:1rem; font-weight:700; color:#0F172A; margin:8px 0; line-height: 1.4;">
+                    <a [routerLink]="['/tin-tuc', item.slug]" style="color: inherit; text-decoration: none;">
+                      {{ item.title }}
+                    </a>
+                  </h4>
+                  <span style="font-size:0.75rem; color:#94A3B8;">
+                    {{ (item.published | date:'dd/MM/yyyy') || 'Mới cập nhật' }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+
+</main>
+

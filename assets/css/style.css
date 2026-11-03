@@ -679,8 +679,8 @@ button.learn-more:hover .button-text {
 
 .megamenu-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1.15fr;
-  gap: 28px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
   align-items: start;
 }
 
@@ -3075,8 +3075,8 @@ button.learn-more:hover .button-text {
 
 /* 21. SCROLLCRAFT ANIMATIONS & MOTION ENHANCEMENTS */
 .scroll-reveal {
-  opacity: 0;
-  transform: translateY(28px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }

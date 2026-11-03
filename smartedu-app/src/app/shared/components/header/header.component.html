@@ -1,0 +1,140 @@
+<!-- ==========================================================================
+     1. TOPBAR (QUICK CONTACT & TAGS)
+     ========================================================================== -->
+<div class="nav-header-top" [class.scrolled-hide]="isScrolled()">
+  <div class="container">
+    <ul class="nav-header-flex">
+      <li class="nav-header-item tag-accent">
+        <a routerLink="/chuong-trinh-hoc"><i class="fa-solid fa-graduation-cap"></i> #LỚP 6 - 12</a>
+      </li>
+      <li class="nav-header-item">
+        <a routerLink="/chuong-trinh-hoc" [queryParams]="{ cap: 'tuyensinh10' }">#LUYỆN THI VÀO 10</a>
+      </li>
+      <li class="nav-header-item">
+        <a routerLink="/lien-he">#2 CƠ SỞ BÌNH PHÚ Q.6</a>
+      </li>
+    </ul>
+    <div class="top-contact">
+      <div class="top-campuses">
+        <i class="fa-solid fa-location-dot"></i> CS1: Số 01 Đ.Số 6 &bull; CS2: Số 17 Đ.Chợ Lớn, Q.6
+      </div>
+      <a href="tel:0906716727" class="top-hotline">
+        <i class="fa-solid fa-phone-volume"></i> Hotline: <span>0906.716.727</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     2. MAIN HEADER & NAVIGATION
+     ========================================================================== -->
+<header class="main-header" [class.scrolled]="isScrolled()">
+  <div class="nav-main-menu">
+    <div class="container">
+
+      <!-- Brand Logo -->
+      <a routerLink="/" class="navbar-brand">
+        <img src="assets/images/branding/logo-smartedu.png" alt="SmartEdu Academy Logo" width="210" height="52">
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="navbar-nav">
+
+        <!-- MỤC CỐ ĐỊNH: TRANG CHỦ -->
+        <div class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a routerLink="/" class="nav-link">Trang chủ</a>
+        </div>
+
+        <!-- VÒNG LẶP MENU ĐỘNG TỪ DATABASE (tbl_ModuleArticle) -->
+        <ng-container *ngFor="let item of menuTree()">
+          <!-- Bỏ qua node Trang chủ từ DB nếu có để tránh lặp -->
+          <ng-container *ngIf="item.urlFrontEnd !== '/' && item.moduleKey !== 'trang-chu'">
+
+            <!-- TRƯỜNG HỢP 1: MEGA MENU (3 CẤP - VD: CHƯƠNG TRÌNH HỌC) -->
+            <div *ngIf="isMegaMenu(item)" class="nav-item megamenu-item" routerLinkActive="active">
+              <a [routerLink]="item.isClickable ? item.urlFrontEnd : null" class="nav-link">
+                {{ item.moduleName }} <i class="fa-solid fa-angle-down"></i>
+              </a>
+              <div class="megamenu">
+                <div class="container">
+                  <div class="megamenu-grid">
+
+                    <!-- Danh sách các cột Cấp 2 từ DB -->
+                    <div *ngFor="let col of item.children" class="megamenu-col">
+                      <div class="megamenu-col-title">
+                        <i *ngIf="col.icon" [class]="col.icon"></i>
+                        <i *ngIf="!col.icon" class="fa-solid fa-book-open"></i>
+                        {{ col.moduleName }}
+                      </div>
+                      <ul class="megamenu-list" *ngIf="col.children && col.children.length > 0">
+                        <li *ngFor="let subChild of col.children">
+                          <a [routerLink]="subChild.isClickable ? subChild.urlFrontEnd : null">
+                            <i class="fa-solid fa-angle-right"></i>
+                            {{ subChild.moduleName }}
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <!-- Cột Card Đăng Ký Học Thử (Cố định thiết kế gốc) -->
+                    <div class="megamenu-col">
+                      <div class="megamenu-promo">
+                        <h4><i class="fa-solid fa-gift"></i> Học Thử 02 Buổi</h4>
+                        <p>Kiểm tra đầu vào 1:1 và trải nghiệm lớp học cùng Thầy Cô ĐH Sư Phạm TP.HCM hoàn toàn miễn
+                          phí.</p>
+                        <button type="button" class="btn-primary-ila btn-red open-assessment-modal" style="width: 100%;"
+                          (click)="openAssessment()">
+                          <span>Đăng Ký Test Đầu Vào 0đ</span>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TRƯỜNG HỢP 2: DROPDOWN THƯỜNG (2 CẤP - VD: GIỚI THIỆU) -->
+            <div *ngIf="!isMegaMenu(item) && item.children && item.children.length > 0" class="nav-item"
+              routerLinkActive="active">
+              <a [routerLink]="item.isClickable ? parseUrl(item.urlFrontEnd).path : null" class="nav-link">
+                {{ item.moduleName }} <i class="fa-solid fa-angle-down"></i>
+              </a>
+              <div class="dropdown-menu">
+                <a *ngFor="let child of item.children" 
+                   [routerLink]="child.isClickable ? parseUrl(child.urlFrontEnd).path : null"
+                   [queryParams]="parseUrl(child.urlFrontEnd).queryParams"
+                   [fragment]="parseUrl(child.urlFrontEnd).fragment"
+                   (click)="onNavigate(child.urlFrontEnd, $event)"
+                   class="dropdown-item">
+                  <i *ngIf="child.icon" [class]="child.icon + ' me-2'"></i>
+                  <span>{{ child.moduleName }}</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- TRƯỜNG HỢP 3: MENU ĐƠN (1 CẤP - VD: BAN GIẢNG HUẤN, TIN TỨC, LIÊN HỆ...) -->
+            <div *ngIf="!isMegaMenu(item) && (!item.children || item.children.length === 0)" class="nav-item"
+              routerLinkActive="active">
+              <a [routerLink]="item.urlFrontEnd" class="nav-link">{{ item.moduleName }}</a>
+            </div>
+
+          </ng-container>
+        </ng-container>
+
+      </nav>
+
+      <!-- Right Header Action Button -->
+      <div class="header-action-wrapper" style="display: flex; align-items: center; gap: 14px;">
+        <button type="button" class="btn-register btn-red open-assessment-modal" (click)="openAssessment()">
+          <span>Đăng ký ngay <i class="fa-solid fa-arrow-right"></i></span>
+        </button>
+        <button type="button" class="mobile-toggle" id="mobileMenuToggle" aria-label="Open navigation menu"
+          (click)="toggleMobileDrawer()">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</header>

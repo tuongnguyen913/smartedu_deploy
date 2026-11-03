@@ -1,0 +1,52 @@
+.breadcrumb-wrapper {
+  padding: 16px 0 12px 0;
+  
+  .breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Khoảng cách an toàn giữa các thành phần */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.875rem; /* 14px */
+    flex-wrap: wrap;
+  }
+
+  .breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+
+    a {
+      color: #64748b; /* Màu xám dịu cho Trang chủ */
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+
+      i {
+        font-size: 0.8125rem;
+      }
+
+      &:hover {
+        color: #d81824;
+      }
+    }
+
+    /* Trang hiện tại: Chữ màu đỏ thương hiệu */
+    &.active {
+      color: #d81824;
+      font-weight: 600;
+    }
+  }
+
+  .breadcrumb-separator {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    margin: 0 2px; /* Đảm bảo không bao giờ dính chữ vào dấu > */
+  }
+}
+

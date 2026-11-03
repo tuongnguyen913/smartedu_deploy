@@ -1,0 +1,477 @@
+<!-- ==========================================================================
+     SECTION 1: HERO BANNER SLIDER & ILA QUICK SELECTOR
+     ========================================================================== -->
+<section class="hero-slider-section" id="section-hero" (mouseenter)="stopSlideAutoplay()" (mouseleave)="startSlideAutoplay()">
+  <div class="hero-slider-wrapper">
+    @for (slide of sliders(); track slide.id; let i = $index) {
+      <div class="hero-slide" [class.active]="currentSlide() === i">
+        <img [src]="slide.urlImage" [alt]="slide.name" class="hero-bg">
+        <div class="hero-overlay"></div>
+        <div class="container" style="height: 100%; display: flex; align-items: center;">
+          <div class="hero-content">
+            @if (slide.badge) {
+              <div class="hero-tag">
+                <i class="fa-solid fa-graduation-cap"></i> {{ slide.badge }}
+              </div>
+            }
+            <h1 class="hero-title" [innerHTML]="slide.title"></h1>
+            @if (slide.subTitle) {
+              <p class="hero-desc">{{ slide.subTitle }}</p>
+            }
+            <div class="hero-actions">
+              <!-- Nhận lộ trình luyện thi lớp 10 -->
+              <button type="button" class="btn-primary-ila btn-red" (click)="openAssessment('Luyện thi vào lớp 10')">
+                <span>Nhận Lộ Trình Luyện Thi Lớp 10</span>
+              </button>
+              <!-- Khám Phá Ngay -->
+              <a [routerLink]="slide.secondaryCtaLink || '/bai-viet-chi-tiet'" class="btn-secondary-ila">
+                <i class="fa-solid fa-compass"></i>
+                <span>Khám Phá Ngay</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Navigation Prev & Next Controls -->
+    <button type="button" class="hero-nav-btn hero-btn-prev" (click)="prevSlide()" aria-label="Previous Slide">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <button type="button" class="hero-nav-btn hero-btn-next" (click)="nextSlide()" aria-label="Next Slide">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+    <!-- Pagination Dots -->
+    <div class="hero-dots">
+      @for (slide of sliders(); track slide.id; let i = $index) {
+        <button
+          type="button"
+          class="hero-dot"
+          [class.active]="currentSlide() === i"
+          (click)="goToSlide(i)"
+          [attr.aria-label]="'Slide ' + (i + 1)"
+        ></button>
+      }
+    </div>
+  </div>
+
+  <!-- Quick Course Filter Bar (Lớp 6 - 12) -->
+  <div class="hero-quick-filter-bar">
+    <div class="container">
+      <form class="choose-course-form" (submit)="$event.preventDefault(); applyQuickFilter()">
+        <div class="choose-filter-grid">
+          <div class="filter-field">
+            <label class="filter-label"><i class="fa-solid fa-graduation-cap"></i> Khối Lớp (Lớp 6 – 12)</label>
+            <select class="filter-select" [(ngModel)]="quickFilterLevel" name="quickFilterLevel">
+              <option value="all">Tất cả các khối lớp</option>
+              <option value="cap2">Khối THCS (Lớp 6 – 9)</option>
+              <option value="tuyensinh10">Luyện thi Tuyển sinh 10</option>
+              <option value="cap3">Khối THPT (Lớp 10 – 12)</option>
+            </select>
+          </div>
+
+          <div class="filter-field">
+            <label class="filter-label"><i class="fa-solid fa-book-open"></i> Môn Học Trọng Tâm</label>
+            <select class="filter-select" [(ngModel)]="quickFilterSubject" name="quickFilterSubject">
+              <option value="all">Tất cả các môn học</option>
+              <option value="toan">Môn Toán (Căn bản &amp; Nâng cao)</option>
+              <option value="van">Môn Ngữ Văn (Nghị luận &amp; Cảm thụ)</option>
+              <option value="anh">Môn Tiếng Anh (SGK &amp; Chuyên sâu)</option>
+              <option value="khtn">Khoa học Tự nhiên (Lý - Hóa - Sinh)</option>
+            </select>
+          </div>
+
+          <div class="filter-field btn-field">
+            <button type="submit" class="btn-primary-ila btn-red btn-search-course" style="width: 100%;">
+              <span><i class="fa-solid fa-magnifying-glass"></i> Tìm Khóa Học Phù Hợp</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SECTION 2: CHƯƠNG TRÌNH BỒI DƯỠNG CHẤT LƯỢNG CAO (HIỂN THỊ 1 HÀNG)
+     ========================================================================== -->
+<section class="section-courses" id="section-courses">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Chương Trình Bồi Dưỡng <span>Chất Lượng Cao</span></h2>
+      <p class="section-subtitle">Chương trình bám sát đổi mới của Sở GD&amp;ĐT TP.HCM. Sĩ số giới hạn 10-15 em, giáo viên ĐH Sư Phạm TP.HCM trực tiếp giảng dạy.</p>
+    </div>
+
+    <!-- Course Cards Grid (1 Row) -->
+    <div class="courses-grid-single-row">
+      @for (course of filteredCourses(); track course.courseId) {
+        <div class="course-item-card">
+          <div class="course-card-thumb">
+            <img [src]="course.thumbnailUrl || 'assets/images/lop-cap2.png'" [alt]="course.courseName" loading="lazy">
+            <span class="course-badge-pill"><i class="fa-solid fa-award"></i> {{ course.grade || 'Lớp bồi dưỡng' }}</span>
+          </div>
+          <div class="course-card-main">
+            <div class="course-card-meta">
+              <span class="course-subject-tag"><i class="fa-solid fa-book"></i> {{ course.subject }}</span>
+              <span class="course-class-size"><i class="fa-solid fa-users"></i> Tối đa {{ course.classSizeMax || 15 }} HS/lớp</span>
+            </div>
+            <h3 class="course-card-title">{{ course.courseName }}</h3>
+            <p class="course-card-desc">{{ course.shortDescription }}</p>
+
+            <div class="course-card-features">
+              <div class="course-feat-item">
+                <i class="fa-solid fa-circle-check"></i> 100% Giảng viên Đại học Sư phạm TP.HCM
+              </div>
+              <div class="course-feat-item">
+                <i class="fa-solid fa-circle-check"></i> Báo cáo tiến độ học tập hàng tuần qua Zalo
+              </div>
+              <div class="course-feat-item">
+                <i class="fa-solid fa-circle-check"></i> Kiểm tra đánh giá và rèn kỹ năng phòng thi
+              </div>
+            </div>
+
+            <div class="course-card-footer">
+              <div class="course-tuition-info">
+                <span class="tuition-label">Thời lượng:</span>
+                <span class="tuition-val">{{ course.scheduleSummary || '2–3 buổi/tuần' }}</span>
+              </div>
+              <button type="button" class="btn-primary-ila btn-red" style="padding: 10px 18px;" (click)="openAssessment(course.courseName)">
+                <span>Đăng Ký Học Thử 02 Buổi</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SECTION 3: 4 CAM KẾT VÀNG & PROOF NUMBERS
+     ========================================================================== -->
+<section class="section-commitments" id="section-commitments">
+  <div class="container">
+    <div class="section-header" style="color: #fff;">
+      <div class="section-badge" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.3);">
+        <i class="fa-solid fa-shield-halved"></i> Bảo chứng chất lượng
+      </div>
+      <h2 class="section-title" style="color: #fff;">4 Cam Kết Vàng — <span>Chỉ Có Tại SmartEdu</span></h2>
+      <p class="section-subtitle" style="color: rgba(255,255,255,0.85);">Chúng tôi không chỉ dạy chữ, mà đồng hành trọn vẹn cùng sự tiến bộ thực chất và nhân cách của mỗi học sinh.</p>
+    </div>
+
+    <div class="commitments-grid">
+      <!-- Cam kết 1 -->
+      <div class="commitment-card">
+        <div class="commitment-icon-wrap" style="background: #FEE2E2; color: #D81824;">
+          <i class="fa-solid fa-user-graduate"></i>
+        </div>
+        <h3 class="commitment-title">Kèm Cặp Trọng Tâm Cá Nhân</h3>
+        <p class="commitment-desc">Học sinh được giáo viên theo dõi sát sao từng buổi học, bổ trợ kiến thức kịp thời để tự tin bứt phá điểm số.</p>
+      </div>
+
+      <!-- Cam kết 2 -->
+      <div class="commitment-card">
+        <div class="commitment-icon-wrap" style="background: #FEF3C7; color: #D97706;">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+        </div>
+        <h3 class="commitment-title">Hoàn 100% Học Phí Nếu Không Tiến Bộ</h3>
+        <p class="commitment-desc">SmartEdu cam kết bằng văn bản: sau 01 học kỳ nỗ lực học tập theo đúng hướng dẫn, nếu điểm số không cải thiện, trung tâm hoàn trả 100% học phí.</p>
+      </div>
+
+      <!-- Cam kết 3 -->
+      <div class="commitment-card">
+        <div class="commitment-icon-wrap" style="background: #EFF6FF; color: #1B3F94;">
+          <i class="fa-solid fa-tree"></i>
+        </div>
+        <h3 class="commitment-title">Phát Triển 3 Trụ Cột: Đức &bull; Trí &bull; Thể</h3>
+        <p class="commitment-desc">Song song bồi dưỡng tri thức, học sinh được rèn luyện thái độ lễ phép, tính kỷ luật, kỹ năng tự học và tinh thần trách nhiệm.</p>
+      </div>
+
+      <!-- Cam kết 4 -->
+      <div class="commitment-card">
+        <div class="commitment-icon-wrap" style="background: #D1FAE5; color: #059669;">
+          <i class="fa-solid fa-users-viewfinder"></i>
+        </div>
+        <h3 class="commitment-title">Sĩ Số Giới Hạn 10 – 15 Học Sinh</h3>
+        <p class="commitment-desc">Tuyệt đối không dạy lớp đại trà 40–50 em. Sĩ số nhỏ giúp giáo viên theo sát từng em, phát hiện lỗ hổng và uốn nắn kịp thời.</p>
+      </div>
+    </div>
+
+    <!-- Proof Numbers Counter Row -->
+    <div class="proof-numbers-row">
+      <div class="proof-num-item">
+        <div class="proof-num-val">100%</div>
+        <div class="proof-num-label">Giảng Viên ĐH Sư Phạm TP.HCM</div>
+      </div>
+      <div class="proof-num-item">
+        <div class="proof-num-val">10 – 15</div>
+        <div class="proof-num-label">Học Sinh / Lớp (Tương Tác Sâu)</div>
+      </div>
+      <div class="proof-num-item">
+        <div class="proof-num-val">98.5%</div>
+        <div class="proof-num-label">Tỷ Lệ Đỗ Nguyện Vọng 1 Công Lập</div>
+      </div>
+      <div class="proof-num-item">
+        <div class="proof-num-val">Lớp 6 – 12</div>
+        <div class="proof-num-label">Lộ Trình Bồi Dưỡng Trọng Điểm</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SECTION 4: BAN GIẢNG HUẤN (THAY HÌNH, BỎ SỐ NĂM KN, ĐỂ LẠI TÊN VÀ TRƯỜNG NÀO)
+     ========================================================================== -->
+<section class="section-faculty" id="section-faculty">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><i class="fa-solid fa-chalkboard-user"></i> Đội ngũ tinh hoa</div>
+      <h2 class="section-title">Hội Đồng Ban Giảng Huấn — <span>100% Chuẩn Sư Phạm</span></h2>
+      <p class="section-subtitle">Đội ngũ giảng viên tốt nghiệp chính quy ĐH Sư phạm TP.HCM trực tiếp giảng dạy và đồng hành cùng học sinh.</p>
+    </div>
+
+    <div class="faculty-grid">
+      @for (teacher of teachers(); track teacher.teacherId) {
+        <div class="faculty-card">
+          <div class="faculty-card-img-wrap">
+            <img [src]="teacher.avatarUrl" [alt]="teacher.fullName" loading="lazy">
+          </div>
+          <div class="faculty-card-info">
+            <span class="faculty-subject">{{ teacher.subject }}</span>
+            <h3 class="faculty-name">{{ teacher.fullName }}</h3>
+            <p class="faculty-degree"><i class="fa-solid fa-graduation-cap"></i> {{ teacher.graduatedUniversity }}</p>
+
+            <button type="button" class="btn-faculty-bio" (click)="openFacultyBio(teacher)" style="margin-top: 12px;">
+              <span>Xem hồ sơ chi tiết</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div style="text-align: center; margin-top: 36px;">
+      <a routerLink="/ban-giang-huan" class="btn-primary-ila btn-navy" style="display: inline-flex; align-items: center; gap: 8px;">
+        <span>Xem Toàn Bộ Thầy Cô Ban Giảng Huấn</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SECTION 5: GƯƠNG MẶT XUẤT SẮC, BẢNG VÀNG (HIỂN THỊ 1 HÀNG)
+     ========================================================================== -->
+<section class="section-hall-of-greatness" id="section-hall">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge" style="background: rgba(217, 119, 6, 0.1); color: #B45309; border-color: rgba(217, 119, 6, 0.25);">
+        <i class="fa-solid fa-crown"></i> Niềm tự hào SmartEdu
+      </div>
+      <h2 class="section-title">Gương Mặt Xuất Sắc &mdash; <span>Bảng Vàng Thành Tích</span></h2>
+      <p class="section-subtitle">Vinh danh những nỗ lực bứt phá không ngừng của học sinh SmartEdu trên hành trình chinh phục trường Chuyên và THPT điểm.</p>
+    </div>
+
+    <div class="hall-slider-wrapper">
+      <!-- 1 Row Grid -->
+      <div class="hall-grid-single-row">
+        @for (honor of honors(); track honor.id) {
+          <div class="hall-card">
+            <div class="hall-card-badge">{{ honor.badge }}</div>
+            <div class="hall-card-img">
+              <img [src]="honor.avatar" [alt]="honor.name" loading="lazy">
+            </div>
+            <div class="hall-card-body">
+              <h3 class="hall-card-name">{{ honor.name }}</h3>
+              <p class="hall-card-school"><i class="fa-solid fa-school"></i> {{ honor.passedSchool }}</p>
+              <div class="hall-card-score">
+                <i class="fa-solid fa-award"></i> {{ honor.score }}
+              </div>
+              @if (honor.quote) {
+                <p class="hall-card-quote">"{{ honor.quote }}"</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SECTION 6: VIDEO THỰC TẾ & MULTIMEDIA
+     ========================================================================== -->
+<section class="section-multimedia" id="section-multimedia">
+  <div class="container">
+    <div class="multimedia-wrapper">
+      <div class="multimedia-video-box">
+        <img src="assets/video/video-poster.jpg" alt="Video lớp học thực tế SmartEdu" class="video-preview-img">
+        <button type="button" class="btn-play-video" (click)="openVideo()" aria-label="Phát video">
+          <i class="fa-solid fa-play"></i>
+        </button>
+        <div class="video-overlay-text">
+          <span><i class="fa-solid fa-circle" style="color: #10B981; font-size: 8px;"></i> Video Lớp Học Thực Tế 4K</span>
+        </div>
+      </div>
+
+      <div class="multimedia-info">
+        <div class="section-badge"><i class="fa-solid fa-video"></i> Trải nghiệm thực tế</div>
+        <h2 style="font-size: 1.85rem; font-weight: 800; color: var(--color-navy-dark); margin: 8px 0 16px;">
+          Một Giờ Học Tại SmartEdu Có Gì Khác Biệt?
+        </h2>
+        <p style="color: var(--color-text-body); font-size: 0.9375rem; line-height: 1.6; margin-bottom: 20px;">
+          Tại SmartEdu, học sinh không phải ngồi nghe giảng thụ động. Mỗi buổi học là một chuỗi trải nghiệm tương tác trực quan: thực hành giải bài theo nhóm, thuyết trình sơ đồ tư duy và nhận phản hồi chi tiết từ Thầy Cô.
+        </p>
+
+        <div class="multimedia-points">
+          <div class="multi-point-item">
+            <div class="point-icon"><i class="fa-solid fa-brain"></i></div>
+            <div>
+              <strong>Phương pháp gợi mở tư duy</strong>
+              <p>Khơi dậy khả năng tự đặt câu hỏi và tự tìm lời giải, không rập khuôn máy móc.</p>
+            </div>
+          </div>
+          <div class="multi-point-item">
+            <div class="point-icon"><i class="fa-solid fa-laptop-code"></i></div>
+            <div>
+              <strong>Bảng tương tác &amp; Phòng học thông minh</strong>
+              <p>Mô hình hóa kiến thức trừu tượng bằng hình ảnh động và ví dụ trực quan sinh động.</p>
+            </div>
+          </div>
+          <div class="multi-point-item">
+            <div class="point-icon"><i class="fa-solid fa-file-signature"></i></div>
+            <div>
+              <strong>Báo cáo học tập minh bạch hàng tuần</strong>
+              <p>Phụ huynh luôn nắm rõ điểm mạnh, điểm yếu và mức độ chuyên cần của con qua Zalo.</p>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary-ila btn-red" style="margin-top: 16px;" (click)="openAssessment('Lớp 9 (Luyện thi vào 10)')">
+          <span>Đăng Ký Cho Con Trải Nghiệm 02 Buổi</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SECTION 8: PHỤ HUYNH NÓI GÌ (ĐỂ NGUYÊN, FIX CỨNG, ĐỔI LỚP 4 THÀNH LỚP 6)
+     ========================================================================== -->
+<section class="section-testimonials" id="section-testimonials">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><i class="fa-solid fa-heart"></i> Lòng tin yêu từ phụ huynh</div>
+      <h2 class="section-title">Phụ Huynh Nói Gì Về <span>SmartEdu</span></h2>
+      <p class="section-subtitle">Sự tiến bộ rõ rệt và sự tự giác học tập mỗi ngày của con là niềm hạnh phúc lớn nhất mà SmartEdu mang lại cho mỗi gia đình.</p>
+    </div>
+
+    <div class="testimonials-grid">
+      @for (item of testimonials(); track item.id) {
+        <div class="testimonial-card">
+          <div class="testi-stars">
+            @for (star of [1,2,3,4,5]; track star) {
+              <i class="fa-solid fa-star"></i>
+            }
+          </div>
+          <p class="testi-quote">"{{ item.content }}"</p>
+          <div class="testi-author">
+            <div class="testi-avatar-circle">{{ item.avatarText }}</div>
+            <div class="testi-info">
+              <h5 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--color-navy-dark);">{{ item.parentName }}</h5>
+              <span style="font-size: 0.8125rem; color: var(--color-text-muted);">{{ item.studentInfo }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SECTION 9: HỆ THỐNG 2 CƠ SỞ BÌNH PHÚ QUẬN 6
+     ========================================================================== -->
+<section class="section-location-area" id="section-locations">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><i class="fa-solid fa-map-location-dot"></i> Thuận tiện đưa đón</div>
+      <h2 class="section-title">Hệ Thống 2 Cơ Sở — <span>Phường Bình Phú, Quận 6</span></h2>
+      <p class="section-subtitle">Tọa lạc tại các trục đường chính của khu đô thị Bình Phú, giao thông an toàn và không gian thoáng đãng.</p>
+    </div>
+
+    <div class="campuses-grid">
+      @for (branch of branches(); track branch.branchId) {
+        <div class="campus-card">
+          <div class="campus-card-img">
+            <img [src]="branch.imageUrl || 'assets/images/co-so-1.jpg'" [alt]="branch.branchName" loading="lazy">
+            <span class="campus-badge">CƠ SỞ {{ branch.branchId }}</span>
+          </div>
+          <div class="campus-card-body">
+            <h3 class="campus-title">{{ branch.branchName }}</h3>
+            <p class="campus-address"><i class="fa-solid fa-location-dot"></i> {{ branch.address }}</p>
+            <p class="campus-hours"><i class="fa-solid fa-clock"></i> Giờ mở cửa: {{ branch.workingHours }}</p>
+            <p class="campus-hotline"><i class="fa-solid fa-phone"></i> Hotline / Zalo: <strong>{{ branch.phone }}</strong></p>
+            
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+              <a routerLink="/lien-he" class="btn-primary-ila btn-navy" style="flex: 1; text-align: center; padding: 10px 14px;">
+                <span>Xem Bản Đồ &amp; Chỉ Đường</span>
+              </a>
+              <button type="button" class="btn-primary-ila btn-red" style="flex: 1;" (click)="openAssessment()">
+                <span>Hẹn Giờ Thăm Lớp</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SECTION 10: LEAD REGISTRATION FORM SECTION
+     ========================================================================== -->
+<section class="section-registration" id="section-register">
+  <div class="container">
+    <div class="reg-container-box">
+      <div class="reg-info-side">
+        <span class="section-badge" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.3);">
+          <i class="fa-solid fa-gift"></i> Ưu đãi đặc biệt
+        </span>
+        <h2 style="font-size: 2.2rem; font-weight: 800; color: #fff; margin: 12px 0 16px; line-height: 1.25;">
+          Đăng Ký Đánh Giá Năng Lực &amp; Trải Nghiệm Học Thử 02 Buổi
+        </h2>
+        <p style="color: rgba(255,255,255,0.9); font-size: 1rem; line-height: 1.6; margin-bottom: 24px;">
+          Để con bạn được các Thầy Cô ĐH Sư Phạm TP.HCM kiểm tra lỗ hổng kiến thức 1:1, tư vấn phương pháp học đúng nhịp độ và trải nghiệm lớp học thực tế hoàn toàn miễn phí.
+        </p>
+
+        <div class="reg-perks">
+          <div class="reg-perk-item">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>
+              <strong>Miễn phí 100% bài test đánh giá năng lực</strong>
+              <p>Phân tích cụ thể năng lực tư duy Toán, Văn, Anh hiện tại của học sinh.</p>
+            </div>
+          </div>
+          <div class="reg-perk-item">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>
+              <strong>Lộ trình học tập bứt phá điểm số</strong>
+              <p>Xây dựng kế hoạch bứt phá điểm số phù hợp với mục tiêu vào lớp 10 của gia đình.</p>
+            </div>
+          </div>
+          <div class="reg-perk-item">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>
+              <strong>Học thử 02 buổi cùng lớp chất lượng cao</strong>
+              <p>Con được trải nghiệm không gian học, phương pháp dạy trước khi đăng ký chính thức.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reg-form-side">
+        <app-lead-form></app-lead-form>
+      </div>
+    </div>
+  </div>
+</section>
